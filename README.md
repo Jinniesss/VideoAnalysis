@@ -20,8 +20,8 @@ Functions called by  [analysis.py](analysis.py) in folder [functions](functions)
 
   ```py
   def change_csv_layout(original_file,video_fname)
-  		...
-  		return new_file
+    ...
+    return new_file
   ```
 
   + converts the format of original  csv file.
@@ -33,11 +33,27 @@ Functions called by  [analysis.py](analysis.py) in folder [functions](functions)
 
   ```py
   def select_points(frame,wname):  
-    							# frame: a frame of the video that would be the 	 
-      						# 			 background image of selection []
-      						# wname: window name [string]
-  		...
-  		return selected_points,frame
+    # frame: a frame of the video that would be the 	 
+    # 			 background image of selection []
+    # wname: window name [string]
+    ...
+    return selected_points,frame
   ```
 
-  + 
+  + displays a window for user to select points (for nest/cage/...)
+
+  + In the GUI, 
+
+    click left mouse button to add a point;
+
+    press `Backspace` to delete the last selected point;
+
+    press `Enter` to finish.
+
+  ```py
+  def transform(df,name,M):
+  
+    ...
+    return ndf
+  ```
+
