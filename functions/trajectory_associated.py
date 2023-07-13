@@ -20,8 +20,7 @@ def masked(df,name,nest = False):
         )
     return df
 
-def plot_trajectory(df,name,bg=None,lm=None,pixel_per_cm=None):
-    ori=df
+def plot_trajectory(df,name,bg=None,pixel_per_cm=None,dataname=None):
     fig = plt.figure()
     fig.dpi = 300
     if bg is None:
@@ -33,9 +32,6 @@ def plot_trajectory(df,name,bg=None,lm=None,pixel_per_cm=None):
     df = masked(df,name)
     x = df[name+'_x']
     y = df[name+'_y']
-
-    # print(max(x))
-    # print(x.idxmax())
 
     if pixel_per_cm is not None:
         x = x / pixel_per_cm
@@ -49,16 +45,10 @@ def plot_trajectory(df,name,bg=None,lm=None,pixel_per_cm=None):
         plt.ylabel('(pixel)')
 
     plt.plot(x, y,linewidth = 0.7, color='red')
-    # if lm != None:
-    #     plt.axis(lm)
 
-    # fancy but slow & blurry one:
-    # l = len(df)
-    # for i in range(l-2):
-    #     plt.plot(x[i:i+2], y[i:i+2], color='red', alpha=0.2)
-
+    if dataname is not None:
+        plt.savefig(dataname+'_trajectory.png')
     plt.show()
-    df=ori
 
 def center_of_gravity(df):
     outer_bodyparts=['leftear','nose','rightear','rightbody1','rightbody2','rightbody3','rightbody4','rightbody5',
@@ -85,7 +75,7 @@ def center_of_gravity(df):
         df['centroid_likelihood'][t]=li
     return df
 
-def gen_trajectory(frame,Dataframe,name,show_image=True):
+def calculate_transformation(frame,Dataframe):
     frame_c = frame.copy()
     M,corrected_coor,pixel_per_cm = corrected(frame_c)
     result = cv2.warpPerspective(frame, M, frame.shape[1::-1])
@@ -94,13 +84,9 @@ def gen_trajectory(frame,Dataframe,name,show_image=True):
     bodyparts = ['nose','leftear','rightear','headstage','leftbody1','leftbody2','leftbody3','leftbody4',
                  'leftbody5','rightbody1','rightbody2','rightbody3','rightbody4','rightbody5','centerbody1',
                  'centerbody2','centerbody3','centerbody4','centerbody5','tailbase','tailtip',
-                 'tail1','tail2','tail3']
+                 'tail1','tail2','tail3','centroid']
     for name_bp in bodyparts:
-        Dataframe_t = transform(Dataframe_t,name_bp,M)
+        if name_bp+'_x' in Dataframe.columns:
+            Dataframe_t = transform(Dataframe_t,name_bp,M)
 
-    if show_image:
-        plot_trajectory(Dataframe_t, name,bg=result)
-        # plot_trajectory(Dataframe_t, name, pixel_per_cm = pixel_per_cm)
-        # plot_trajectory(Dataframe_t,name,lm=[corrected_coor[0][0],corrected_coor[2][0],corrected_coor[0][1],corrected_coor[2][1]])
-
-    return pixel_per_cm,Dataframe_t
+    return pixel_per_cm,Dataframe_t,result

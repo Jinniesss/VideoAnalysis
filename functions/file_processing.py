@@ -1,11 +1,10 @@
 import tkinter as tk
-from tkinter import filedialog
+from tkinter.filedialog import askopenfilename
 import csv
 import re
-def change_csv_layout(original_file,video_fname):
-
+def change_csv_layout(original_file,dataname):
     # Create a new CSV file
-    new_file = video_fname[:-4] + '_data.csv'
+    new_file = dataname + '_data.csv'
     print('Converting the layout of csv file...')
     with open(original_file, 'r') as csv_file:
         reader = csv.reader(csv_file)

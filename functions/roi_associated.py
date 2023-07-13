@@ -3,8 +3,8 @@ import pandas as pd
 import cv2
 import math
 
-def select_points(frame,wname):
-    print('Waiting for points selection for '+wname+' ...')
+def select_points(frame,wname,dataname=None):
+    print('Waiting for points selection: '+wname+' ...')
     # Global variables to store the selected points
     selected_points = []
     current_point = 0
@@ -32,9 +32,11 @@ def select_points(frame,wname):
         frame_c = frame.copy()
         selected_points.pop()
         if current_point == 0:
+            cv2.imshow(wname, frame_c)
             return
         current_point -= 1
         if current_point == 0:
+            cv2.imshow(wname, frame_c)
             return
         # Draw a circle to mark the selected point
         cv2.circle(frame_c, selected_points[current_point-1], 5, (0, 0, 255), -1)
@@ -44,6 +46,16 @@ def select_points(frame,wname):
 
         # Display the image with selected points
         cv2.imshow(wname, frame_c)
+
+    def save_nest_img():
+        nonlocal selected_points, current_point
+        frame_c = frame.copy()
+
+        # Draw the contour of selected points
+        cv2.drawContours(frame_c, [np.array(selected_points)], 0, (0, 0, 255), 2)
+
+        # Display the image with selected points
+        cv2.imwrite(dataname+'_nest.jpg', frame_c)
 
     # Create a window to display the image
     cv2.namedWindow(wname)
@@ -59,8 +71,10 @@ def select_points(frame,wname):
         if key == 13:  # press 'Enter' key to finish
             print('Selection finished.')
             cv2.destroyAllWindows()
+            if dataname is not None:
+                save_nest_img()
             break
-        elif key == 127 or key == 8:  # press 'Backspace' or 'Delete' key to finish
+        elif key == 127 or key == 8:  # press 'Backspace' or 'Delete' key to delete last point
             if current_point > 0:
                 del_point()
 
@@ -85,15 +99,16 @@ def is_in_roi(x, y, roi_arr):
         return False
 
 def corrected(frame):
-    corners, marked_frame = select_points(frame,'select corners (press ENTER to finish)',corner=True)
+    corners, marked_frame = select_points(frame,'select corners (press ENTER to finish)')
     corners = np.array(corners, dtype=np.float32)
-    real_width = 11.5/0.39370  # cm
-    real_length = 7/0.39370    # cm
+    from analysis import real_width,real_length
+    real_width = real_width/0.39370  # cm
+    real_length = real_length/0.39370    # cm
 
-    # width = int(corners[2][0]-corners[0][0])
     w1 = (corners[3][0] - corners[0][0]) ** 2 + (corners[3][1] - corners[0][1]) ** 2
-    w2 = (corners[2][0] - corners[2][0]) ** 2 + (corners[2][1] - corners[1][1]) ** 2
-    width = (math.sqrt(w1)+math.sqrt(w2))/2
+    w2 = (corners[2][0] - corners[1][0]) ** 2 + (corners[2][1] - corners[1][1]) ** 2
+    width = (math.sqrt(w1)+math.sqrt(w2))/2   # width in pixel
+    # width = corners[3][0]-corners[0][0]
     pixel_per_cm = width / real_width
     length = int(pixel_per_cm * real_length)
     width = int(width)

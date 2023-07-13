@@ -64,7 +64,7 @@ class VideoPlayer(QMainWindow):
         self.time_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # temporary -- testing file
-        vfname='/Users/jinnie/Desktop/lab/behavior analysis/PD-Mice-Behavior-Analysis/test/Lindsay_TDT_FP-221104-095302_M105_M106-221104-162128_Cam1DLC_resnet50_Video_behaviorApr5shuffle1_100000_labeled.mp4'
+        vfname=r"G:\.shortcut-targets-by-id\16_yydX2VMUgk-VfcpJJ4IMz2ZCDKD6C-\Data_analysis\Mouse behavior\Videos\DLC_analysis\ASAP_video\M105\M105_S1\M105_S1.avi"
         self.media_player.setSource(QUrl.fromLocalFile(vfname))
         self.media_player.play()
 
@@ -141,6 +141,21 @@ class VideoPlayer(QMainWindow):
             self.nest.setFixedSize(80, 30)
             self.nest.setStyleSheet("background-color: red;border: 1px solid black;")
 
+    def update_var(self,position):
+        cur_frame = int(position/100)
+        if len(self.df)==0:
+            return
+        if cur_frame>len(self.df):
+            self.nest.setText("ERROR")
+            self.nest.setFixedSize(80, 30)
+            self.nest.setStyleSheet("background-color: yellow;border: 1px solid black;")
+            print(cur_frame,len(self.df))
+            return
+        else:
+            self.nest.setText(str(self.df['centerbody3_var'][cur_frame])[:6])
+            self.nest.setFixedSize(150, 30)
+            self.nest.setStyleSheet("background-color: white;border: 1px solid black;")
+
 class MplCanvas(FigureCanvasQTAgg):
     def __init__(self):
         fig = Figure(figsize=(1, 1), dpi=100)
@@ -199,7 +214,7 @@ class Plot_Figures(QMainWindow):
         #                   *to be modified as interface*
 
         # temporary -- testing file
-        lfname='/Users/jinnie/Desktop/lab/behavior analysis/PD-Mice-Behavior-Analysis/short_video_kinematics(3h).csv'
+        lfname=r"G:\.shortcut-targets-by-id\16_yydX2VMUgk-VfcpJJ4IMz2ZCDKD6C-\Data_analysis\Mouse behavior\Videos\DLC_analysis\ASAP_video\M105\M105_S1\M105_S1_data.csv"
         self.Dataframe = pd.read_csv(lfname)
         self.update_plots(0)
 
@@ -226,6 +241,7 @@ class Plot_Figures(QMainWindow):
         self.setCentralWidget(container)
 
     def update_plots(self,position):
+        return          # temporary
         if len(self.Dataframe) != 0:
             self.p1.update_plot(position,self.Dataframe['velocity'],'velocity')
             self.p2.update_plot(position,self.Dataframe['acceleration'],'acceleration')
@@ -236,6 +252,7 @@ class Plot_Figures(QMainWindow):
 
     def select_label(self):
         label_fname, _ = QFileDialog.getOpenFileName(self, 'Open file', "", "*.csv")
+        label_fname = r'' + label_fname
         self.Dataframe = pd.read_csv(label_fname)
         self.update_plots(0)
 
@@ -255,7 +272,8 @@ class MainWindow(QMainWindow):
 
         # update the figures when video changes
         # self.video_player.media_player.positionChanged.connect(self.figures.update_plots)
-        self.video_player.media_player.positionChanged.connect(self.video_player.update_nest)
+        # self.video_player.media_player.positionChanged.connect(self.video_player.update_nest)
+        self.video_player.media_player.positionChanged.connect(self.video_player.update_var)
 
         # set the layout
         layout = QHBoxLayout()

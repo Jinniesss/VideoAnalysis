@@ -1,22 +1,42 @@
 # Behavior Analysis
 
-Files with main function:
+_Jinnie 2023_
+
+**[User can only read the content in bold to run the code:)]**
+
+---
+### Files supposed to be run by user:
 
 +  [realtimeGUI.py](realtimeGUI.py) 
 
   shows the real time change of several parameters along with the video.
 
   *input: video file, data file [in converted format]*
+****
+  
 
 +  [analysis.py](analysis.py) 
 
-  analyzes and updates the csv data from DEEPLABCUT, also generates some plots of interest
+  analyzes and updates the csv data from DEEPLABCUT, also generates some plots of interest.
 
   *input: video file, (several assignable variables)*
 
+**[Select the folder where the video and csv files are.]**
+
+**[Nest selection should be anticlockwise from the top left corner.]**
+
 ---
 
-Functions called by  [analysis.py](analysis.py) in folder [functions](functions):
++  [ana_for_folders.py](ana_for_folders.py)
+  
+  calls [analysis.py](analysis.py) for all the videos in a folder.
+
+  **[Select the folder that includes all the video folders (each of which contains a video and other corresponding files).]**
+
+---
+*[to be updated:]*
+
+### Functions called by  [analysis.py](analysis.py) in folder [functions](functions):
 
 +  [file_processing.py](functions/file_processing.py) 
 
@@ -82,7 +102,7 @@ Functions called by  [analysis.py](analysis.py) in folder [functions](functions)
   def transform(df,name,M):
   	# df: dataframe
     # name: the name of the bodypart of interest
-    ...
+    ndf = []
     return ndf
   	# ndf: new dataframe
   ```
@@ -140,5 +160,5 @@ Functions called by  [analysis.py](analysis.py) in folder [functions](functions)
   ```
 
   + calls functions `corrected`, `transform`, and `plot_trajectory`
-  + The main function only needs to call this.
+  + The main function only needs to call this one.
 
