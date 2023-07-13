@@ -6,6 +6,7 @@ load("check_FP\photometry.mat",'photometry');
 load("check_FP\labels.mat",'labels');  % 1/2/3
 load("check_FP\labels_timecrop.mat",'labels_timecrop');     % hour
 labels = labels.';
+% phot_timehourcrop = phot_timehourcrop/60;
 
 folder = pwd;
 [~,name,~] = fileparts(folder);

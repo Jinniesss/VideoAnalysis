@@ -7,8 +7,8 @@ import scipy.io
 from functions.trajectory_associated import masked
 
 
-def gen_nest(df,name,nest):
-    nest = [(int(x),int(y)) for x,y in nest]
+def gen_nest(df, name, nest):
+    nest = [(int(x), int(y)) for x, y in nest]
     nest = np.array(nest)
     df['nest'] = [0] * len(df)
     # print(len(nest))
@@ -17,22 +17,26 @@ def gen_nest(df,name,nest):
     # print(type(nest))
 
     for i in range(len(df)):
-        x = int(df[name+'_x'][i])
-        y = int(df[name+'_y'][i])
-        if is_in_roi(x,y,nest):
-            df['nest'][i]= 1
+        try:
+            x = int(df[name + '_x'][i])
+            y = int(df[name + '_y'][i])
+        except ValueError:
+            continue
+        if is_in_roi(x, y, nest):
+            df['nest'][i] = 1
     return df
 
-def nest_ana(Dataframe,name,pixel_per_cm,dataname,window=3,show=True):
-    Dataframe = masked(Dataframe,name,nest=True)
+
+def nest_ana(Dataframe, name, pixel_per_cm, dataname, window=3, show=True):
+    Dataframe = masked(Dataframe, name, nest=True)
     # 1: stay time
-    fig, axs = plt.subplots(1, 3, figsize=(12,5))
+    fig, axs = plt.subplots(1, 3, figsize=(12, 5))
     nest_state = Dataframe['nest']
     in_nest_frame_num = nest_state.value_counts().get(1, 0)
     out_nest_frame_num = nest_state.value_counts().get(0, 0)
     # Set the names for each bar
     names = ['In Nest', 'Out of Nest']
-    counts = [in_nest_frame_num/10, out_nest_frame_num/10]
+    counts = [in_nest_frame_num / 10, out_nest_frame_num / 10]
     # Create the histogram
 
     axs[0].pie(counts, labels=names, autopct='%1.1f%%')
@@ -42,9 +46,8 @@ def nest_ana(Dataframe,name,pixel_per_cm,dataname,window=3,show=True):
     axs[1].set_ylabel('Duration of Stay(sec)')
     plt.subplots_adjust(wspace=1)
 
-
     # 2: moving rate in each state
-    v_in_nest_frame_num = 0     # valid frame number
+    v_in_nest_frame_num = 0  # valid frame number
     v_out_nest_frame_num = 0
     in_nest_distance = 0
     out_nest_distance = 0
@@ -55,14 +58,14 @@ def nest_ana(Dataframe,name,pixel_per_cm,dataname,window=3,show=True):
     grouped_df = Dataframe.groupby(groups)
 
     for group_num, group_data in grouped_df:
-        cur_nest_state=group_data['nest'][group_data.index[0]]
+        cur_nest_state = group_data['nest'][group_data.index[0]]
         if np.isnan(cur_nest_state):
             continue
 
         df = group_data.copy()
         df = df.rolling(window=window).mean()
         df = df.dropna()
-        df['distance'] = np.linalg.norm(df[[name+'_x', name+'_y']].diff(), axis=1)
+        df['distance'] = np.linalg.norm(df[[name + '_x', name + '_y']].diff(), axis=1)
         df = df.dropna()
 
         if cur_nest_state == 1:
@@ -75,9 +78,10 @@ def nest_ana(Dataframe,name,pixel_per_cm,dataname,window=3,show=True):
             print('error:')
             print(group_data['nest'])
 
-    moving_rate_in = in_nest_distance/v_in_nest_frame_num/pixel_per_cm*freq      # cm per sec
-    moving_rate_out = out_nest_distance/v_out_nest_frame_num/pixel_per_cm*freq
-    moving_rate_tot = (in_nest_distance+out_nest_distance)/(v_in_nest_frame_num+v_out_nest_frame_num)/pixel_per_cm*freq
+    moving_rate_in = in_nest_distance / v_in_nest_frame_num / pixel_per_cm * freq  # cm per sec
+    moving_rate_out = out_nest_distance / v_out_nest_frame_num / pixel_per_cm * freq
+    moving_rate_tot = (in_nest_distance + out_nest_distance) / (
+                v_in_nest_frame_num + v_out_nest_frame_num) / pixel_per_cm * freq
 
     axs[2].plot([0, 1], [moving_rate_in, moving_rate_out], '-', lw=2, color='gray')
     axs[2].bar(0, moving_rate_in, color='blue', alpha=0.3, width=0.5)
@@ -89,13 +93,15 @@ def nest_ana(Dataframe,name,pixel_per_cm,dataname,window=3,show=True):
     axs[2].set_xticks([0, 1])
     axs[2].set_xticklabels(['In Nest', 'Out of Nest'])
     # axs[2].set_ylim(0,1.3*moving_rate_out)
-    plt.savefig(dataname+'_nest_ana.png')
+    plt.savefig(dataname + '_nest_ana.png')
 
     # save to mat file:
-    nest_result = {'time_in_nest':v_in_nest_frame_num/freq, 'time_out_of_nest':v_out_nest_frame_num/freq,
-                    'moving_rate_in':moving_rate_in,'moving_rate_out':moving_rate_out,'moving_rate_tot':moving_rate_tot}
+    nest_result = {'time_in_nest': v_in_nest_frame_num / freq,
+                   'time_out_of_nest': v_out_nest_frame_num / freq,
+                   'distance_in_nest': in_nest_distance / pixel_per_cm,
+                   'distance_out_of_nest': out_nest_distance / pixel_per_cm}
 
-    scipy.io.savemat(name+'_Moving_ana.mat',nest_result)
+    scipy.io.savemat(dataname + '_Moving_ana.mat', nest_result)
 
     if show == False:
         plt.clf()
@@ -106,11 +112,11 @@ def nest_ana(Dataframe,name,pixel_per_cm,dataname,window=3,show=True):
     return moving_rate_out
 
 
-def test_window_for_nest(Dataframe,name,pixel_per_cm):
+def test_window_for_nest(Dataframe, name, pixel_per_cm):
     rate = []
-    for i in range(1,101):
-        print('Calculating -- ',i,'/100...')
-        rate.append(nest_ana(Dataframe,name,pixel_per_cm,window=i,show=False))
+    for i in range(1, 101):
+        print('Calculating -- ', i, '/100...')
+        rate.append(nest_ana(Dataframe, name, pixel_per_cm, window=i, show=False))
     plt.clf()
-    plt.plot(range(1,101),rate,'-o')
+    plt.plot(range(1, 101), rate, '-o')
     plt.show()

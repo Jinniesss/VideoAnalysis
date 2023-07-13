@@ -46,10 +46,10 @@ def cal_v_a(Dataframe, name,pixel_per_cm, window=11,show=True):
     return Dataframe
 
 
-def cal_var_traj(Dataframe, name, window=11,show=True):
+def cal_var_traj(Dataframe, name,pixel_per_cm, window=11,show=True):
     dfc = Dataframe.copy()
     dfc.loc[dfc[name + '_likelihood'] < pcutoff, [name + '_x_win', name + '_y_win']] = np.nan
-    df = dfc[[name+'_x_win',name+'_y_win']].copy()
+    df = dfc[[name+'_x_win',name+'_y_win']].copy()/pixel_per_cm
     Dataframe[name+'_var']=[np.nan]*len(Dataframe)
     rolling_df = df.rolling(window,min_periods=1,center=True)
     for i, win in enumerate(rolling_df):

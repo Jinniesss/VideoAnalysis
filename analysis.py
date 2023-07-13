@@ -65,6 +65,9 @@ def main(folder_path=None):
             avi_files.append(file)
     if len(avi_files) == 1:
         video_fname = folder_path + '/' + avi_files[0]
+    elif len(avi_files) == 0:
+        print('Video file not found in current folder.')
+        return
     else:
         print('Error when loading video file:',avi_files)
         return
@@ -161,7 +164,7 @@ def main(folder_path=None):
             print('[DONE: velocity & acceleration of ' + name+ ']')
 
         # Nest kinetics analysis (movement v.s. nest state)
-        if not os.path.exists(dataname+'_nest_ana.png'):
+        if True or not os.path.exists(dataname+'_Moving_ana.mat') or not os.path.exists(dataname+'_nest_ana.png'):
             print('Running nest analysis...')
             nest_ana(Dataframe,name,pixel_per_cm,dataname,window=4)
             print('[DONE: nest analysis]')
@@ -169,9 +172,10 @@ def main(folder_path=None):
         # -------------------------------------------------------------------#
 
         # Calculate variance of trajectory
-        if True or name+'_var' not in Dataframe.columns:
+        if False:
+        # if name+'_var' not in Dataframe.columns:
             print('Updating csv file.. [NEW: variance of trajectory of ' + name+ ']')
-            Dataframe = cal_var_traj(Dataframe,name,window=11)
+            Dataframe = cal_var_traj(Dataframe,name,pixel_per_cm,window=11)
             flag_write = True
             print('[DONE: variance of trajectory of ' + name+ ']')
 

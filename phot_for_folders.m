@@ -16,6 +16,7 @@ for i = 1:numel(folders)
     containsNumber = any(regexp(folder, '\d', 'once'));
     if ~containsNumber 
         continue;
+        
     end
     cd(folder);
     s = get_session(folder);
