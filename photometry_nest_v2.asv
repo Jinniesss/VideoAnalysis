@@ -1,3 +1,20 @@
+%%% v2 Lindsay change photometry signal to z score
+
+dirlist1 = dir(pwd);
+isub = [dirlist1(:).isdir];
+mouseList = {dirlist1(isub).name}';
+mouseList(1:2)=[];            %% delete '.' and '..'
+
+for m_id=1:length(mouseList)
+    disp(mouseList{m_id});
+    cd(mouseList{m_id});
+    dirlist2 = dir(pwd);
+isub = [dirlist2(:).isdir];
+sessionList = {dirlist1(isub).name}';
+mouseList(1:2)=[];            %% delete '.' and '..'
+
+    for s_id = 1: 
+
 clear all;
 
 %%
@@ -5,8 +22,14 @@ load('check_FP\phot_timehourcrop.mat','phot_timehourcrop');  % hour
 load("check_FP\photometry.mat",'photometry');          
 load("check_FP\labels.mat",'labels');  % 1/2/3
 load("check_FP\labels_timecrop.mat",'labels_timecrop');     % hour
+
+%%
 labels = labels.';
-phot_timehourcrop = phot_timehourcrop/60;
+if max(phot_timehourcrop)>60
+phot_timehourcrop = phot_timehourcrop/60; %% old analysis, data saved in unit of minutes
+labels_timecrop = labels_timecrop/60; %% old analysis, data saved in unit of minutes
+end
+z_score = (photometry - mean(photometry))/std(photometry);           % z - score
 
 folder = pwd;
 [~,name,~] = fileparts(folder);
@@ -91,27 +114,27 @@ for i = 1:length(state_change_frame)
     
     switch cur_nest_state
         case 1
-            in_phot_all = horzcat(in_phot_all , photometry(phot_start_ind:phot_end_ind));
+            in_phot_all = horzcat(in_phot_all , z_score(phot_start_ind:phot_end_ind));
             
             switch cur_label
                 case 1
-                    in_1_all = horzcat(in_1_all,photometry(phot_start_ind:phot_end_ind));
+                    in_1_all = horzcat(in_1_all,z_score(phot_start_ind:phot_end_ind));
                 case 2 
-                    in_2_all = horzcat(in_2_all,photometry(phot_start_ind:phot_end_ind));
+                    in_2_all = horzcat(in_2_all,z_score(phot_start_ind:phot_end_ind));
                 case 3
-                    in_3_all = horzcat(in_3_all,photometry(phot_start_ind:phot_end_ind));
+                    in_3_all = horzcat(in_3_all,z_score(phot_start_ind:phot_end_ind));
             end
 
         case 0
-            out_phot_all = horzcat(out_phot_all , photometry(phot_start_ind:phot_end_ind));
+            out_phot_all = horzcat(out_phot_all , z_score(phot_start_ind:phot_end_ind));
 
             switch cur_label
                 case 1
-                    out_1_all = horzcat(out_1_all,photometry(phot_start_ind:phot_end_ind));
+                    out_1_all = horzcat(out_1_all,z_score(phot_start_ind:phot_end_ind));
                 case 2 
-                    out_2_all = horzcat(out_2_all,photometry(phot_start_ind:phot_end_ind));
+                    out_2_all = horzcat(out_2_all,z_score(phot_start_ind:phot_end_ind));
                 case 3
-                    out_3_all = horzcat(out_3_all,photometry(phot_start_ind:phot_end_ind));
+                    out_3_all = horzcat(out_3_all,z_score(phot_start_ind:phot_end_ind));
             end
 
         otherwise
@@ -127,8 +150,8 @@ fig = figure('Position', [100, 100, 1200, 800]);
 % Compute mean and standard variation
 mean1 = mean(in_phot_all);
 mean2 = mean(out_phot_all);
-sd1 = std(in_phot_all)/sqrt(numel(in_phot_all));
-sd2 = std(out_phot_all)/sqrt(numel(out_phot_all));
+se1 = std(in_phot_all)/sqrt(numel(in_phot_all));
+se2 = std(out_phot_all)/sqrt(numel(out_phot_all));
 
 ax = subplot(2,3,1);
 hold(ax, 'on');
@@ -137,12 +160,12 @@ hold(ax, 'off');
 
 % Plot error bars for standard deviation
 hold(ax, 'on');
-errorbar(ax, [1, 2], [mean1, mean2], [sd1, sd2], '.', 'LineWidth', 1);
+errorbar(ax, [1, 2], [mean1, mean2], [se1, se2], '.', 'LineWidth', 1);
 hold(ax, 'off');
 
 % Customize the plot
 xlabel('Nest State');
-ylabel('Photometry');
+ylabel('z score');
 xticks(ax, [1, 2]);
 xticklabels(ax, {'In Nest', 'Out of Nest'});
 grid(ax, 'off');
@@ -151,9 +174,9 @@ grid(ax, 'off');
 mean1 = mean(in_1_all);
 mean2 = mean(in_2_all);
 mean3 = mean(in_3_all);
-sd1 = se(in_1_all);
-sd2 = se(in_2_all);
-sd3 = se(in_3_all);
+se1 = se(in_1_all);
+se2 = se(in_2_all);
+se3 = se(in_3_all);
 
 ax2 = subplot(2,3,2);
 hold(ax2, 'on');
@@ -162,12 +185,12 @@ hold(ax2, 'off');
 
 % Plot error bars for standard deviation
 hold(ax2, 'on');
-errorbar(ax2, [1, 2,3], [mean1, mean2,mean3], [sd1, sd2,sd3], '.', 'LineWidth', 1);
+errorbar(ax2, [1, 2,3], [mean1, mean2,mean3], [se1, se2,se3], '.', 'LineWidth', 1);
 hold(ax2, 'off');
 
 % Customize the plot
 xlabel('Brain State');
-ylabel('Photometry');
+ylabel('z score');
 xticks(ax2, [1, 2,3]);
 xticklabels(ax2, {'REM', 'WAKE','NREM'});
 grid(ax2, 'off');
@@ -177,9 +200,9 @@ title('In Nest')
 mean1 = mean(out_1_all);
 mean2 = mean(out_2_all);
 mean3 = mean(out_3_all);
-sd1 = std(out_1_all)/sqrt(numel(out_1_all));
-sd2 = std(out_2_all)/sqrt(numel(out_2_all));
-sd3 = std(out_3_all)/sqrt(numel(out_3_all));
+se1 = std(out_1_all)/sqrt(numel(out_1_all));
+se2 = std(out_2_all)/sqrt(numel(out_2_all));
+se3 = std(out_3_all)/sqrt(numel(out_3_all));
 
 ax1 = subplot(2,3,3);
 hold(ax1, 'on');
@@ -188,12 +211,12 @@ hold(ax1, 'off');
 
 % Plot error bars for standard deviation
 hold(ax1, 'on');
-errorbar(ax1, [1, 2,3], [mean1, mean2, mean3], [sd1, sd2, sd3], '.', 'LineWidth', 1);
+errorbar(ax1, [1, 2,3], [mean1, mean2, mean3], [se1, se2, se3], '.', 'LineWidth', 1);
 hold(ax1, 'off');
 
 % Customize the plot
 xlabel('Brain State');
-ylabel('Photometry');
+ylabel('z score');
 xticks(ax1, [1, 2, 3]);
 xticklabels(ax1, {'REM', 'WAKE', 'NREM'});
 grid(ax1, 'off');
@@ -217,7 +240,7 @@ legend(labels)
 title('Out of Nest')
 axis equal;
 
-saveas(gcf, [name '_phot_ana.png']);
+saveas(gcf, [name '_zscore_ana.png']);
 
 %%
 data = [mean(in_1_all) mean(in_2_all) mean(in_3_all) mean(in_phot_all)
@@ -230,8 +253,9 @@ variables = {'In_R_mean','In_W_mean','In_N_mean','In_mean'...
              'Out_R_mean','Out_W_mean','Out_N_mean','Out_mean',...
              'Out_R_se','Out_W_se','Out_N_se','Out_se'};
 
-phot_ana = array2table(data,'VariableNames',variables);
-save([name '_phot_ana.mat'], 'phot_ana');
+zscore_ana = array2table(data,'VariableNames',variables);
+save([name '_zscore_ana.mat'], 'zscore_ana');
+end
 
 function se = se(vector)
     n = numel(vector);                % Number of data points

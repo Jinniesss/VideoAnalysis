@@ -57,23 +57,23 @@ for n = 1:numel(names)
     end
     
     %%
-    figure();
-    hold on;
-    xlim([0 10])
-    width = 0.2;
-    histogram(wake_var,'BinWidth',width,'FaceColor','auto');
-    histogram(rem_var, 'BinWidth', width, 'FaceColor', 'blue');
-    histogram(nrem_var,'BinWidth', width, 'FaceColor', 'red');
-    legend()
-    xlabel('Variance of Trajectory');
-    ylabel('Frequency');
-    title(bpname);
-    set(gca, 'YScale', 'log');
+    % figure();
+    % hold on;
+    % % xlim([0 800])
+    % width = 0.2;
+    % histogram(wake_var,'BinWidth',width,'FaceColor','auto');
+    % histogram(rem_var, 'BinWidth', width, 'FaceColor', 'blue');
+    % histogram(nrem_var,'BinWidth', width, 'FaceColor', 'red');
+    % legend()
+    % xlabel('Variance of Trajectory');
+    % ylabel('Frequency');
+    % title('Distribution');
+    % set(gca, 'YScale', 'log');
     % close;
     %%
     sleep_var = horzcat(nrem_var,rem_var);
     s_sleep_var = sort(sleep_var, 'descend');
-    t1 = s_sleep_var(round((length(s_sleep_var)/20)));
+    t1 = s_sleep_var(round((length(s_sleep_var)/20);
     % t1 = mean(sleep_var)+3*std(sleep_var);
     
     mov_state_frame(var_traj < t1) = 1;   % 1 -- immobility

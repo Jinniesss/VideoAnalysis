@@ -103,7 +103,8 @@ def main(folder_path=None):
     re_gen_va = False
     re_transform = False
     laser = False
-    name = 'centerbody3'
+    name4traj = 'centerbody3'
+    name4kin = ['leftear', 'rightear']
     # -------------------------------------------------------------------#
     try:
         # Generate likelihood plot-------------------------------------------#
@@ -127,7 +128,7 @@ def main(folder_path=None):
                 (re_gen_nest is True or 'nest' not in Dataframe.columns):
             print('Updating csv file.. [NEW: nest state]')
             nest = select_points(frame,'select nest (press ENTER to finish)',dataname=dataname)
-            Dataframe = gen_nest(Dataframe,name,nest[0])
+            Dataframe = gen_nest(Dataframe,name4traj,nest[0])
             flag_write = True
             print('[DONE: nest state]')
         # -------------------------------------------------------------------#
@@ -157,37 +158,44 @@ def main(folder_path=None):
 
         # Kinetics-----------------------------------------------------------#
         # Calculate the velocity and acceleration  (v in [cm/s]; a in [g])
-        if re_gen_va or name+'_v' not in Dataframe.columns:
-            print('Updating csv file.. [NEW: velocity & acceleration of ' + name+ ']')
-            Dataframe = cal_v_a(Dataframe,name,pixel_per_cm,window=11)
+        for name in name4kin:
+            if re_gen_va or name+'_v' not in Dataframe.columns:
+                print('Updating csv file.. [NEW: velocity & acceleration of ' + name+ ']')
+                Dataframe = cal_v_a(Dataframe,name,pixel_per_cm,window=11)
+                flag_write = True
+                print('[DONE: velocity & acceleration of ' + name+ ']')
+        if re_gen_va or name4traj+'_v' not in Dataframe.columns:
+            print('Updating csv file.. [NEW: velocity & acceleration of ' + name4traj+ ']')
+            Dataframe = cal_v_a(Dataframe,name4traj,pixel_per_cm,window=11)
             flag_write = True
-            print('[DONE: velocity & acceleration of ' + name+ ']')
+            print('[DONE: velocity & acceleration of ' + name4traj+ ']')
 
         # Nest kinetics analysis (movement v.s. nest state)
         if True or not os.path.exists(dataname+'_Moving_ana.mat') or not os.path.exists(dataname+'_nest_ana.png'):
             print('Running nest analysis...')
-            nest_ana(Dataframe,name,pixel_per_cm,dataname,window=4)
+            nest_ana(Dataframe,name4traj,pixel_per_cm,dataname,window=4)
             print('[DONE: nest analysis]')
         # # test_window_for_nest(Dataframe,name,pixel_per_cm)
         # -------------------------------------------------------------------#
 
         # Calculate variance of trajectory
-        if False:
-        # if name+'_var' not in Dataframe.columns:
-            print('Updating csv file.. [NEW: variance of trajectory of ' + name+ ']')
-            Dataframe = cal_var_traj(Dataframe,name,pixel_per_cm,window=11)
-            flag_write = True
-            print('[DONE: variance of trajectory of ' + name+ ']')
+        for name in name4kin:
+            if True:
+            # if name+'_var' not in Dataframe.columns:
+                print('Updating csv file.. [NEW: variance of trajectory of ' + name+ ']')
+                Dataframe = cal_var_traj(Dataframe,name,pixel_per_cm,window=11)
+                flag_write = True
+                print('[DONE: variance of trajectory of ' + name+ ']')
 
 
         # Plot the trajectory------------------------------------------------#
         # plot_trajectory(Dataframe_o, name, bg=frame)
-        plot_trajectory(Dataframe, name, bg=frame_t, dataname=dataname)
+        plot_trajectory(Dataframe, name4traj, bg=frame_t, dataname=dataname)
         # -------------------------------------------------------------------#
 
         # Cluster according to acceleration
         if laser is True:
-            laser_a_cluster(Dataframe,name,dataname,re_gen_plots=True)
+            laser_a_cluster(Dataframe,name4traj,dataname,re_gen_plots=True)
 
 
         if flag_write:

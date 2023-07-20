@@ -152,9 +152,17 @@ class VideoPlayer(QMainWindow):
             print(cur_frame,len(self.df))
             return
         else:
-            self.nest.setText(str(self.df['centerbody3_var'][cur_frame])[:6])
-            self.nest.setFixedSize(150, 30)
-            self.nest.setStyleSheet("background-color: white;border: 1px solid black;")
+            if self.df['centerbody3_movement_state'][cur_frame]==1:
+                self.nest.setText('immobility')
+                self.nest.setFixedSize(150, 30)
+                self.nest.setStyleSheet("background-color: yellow;border: 1px solid black;")
+            else:
+                self.nest.setText('...')
+                self.nest.setFixedSize(150, 30)
+                self.nest.setStyleSheet("background-color: lightgreen;border: 1px solid black;")
+            # self.nest.setText(str(self.df['centerbody3_var'][cur_frame])[:6])
+            # self.nest.setFixedSize(150, 30)
+            # self.nest.setStyleSheet("background-color: white;border: 1px solid black;")
 
 class MplCanvas(FigureCanvasQTAgg):
     def __init__(self):
