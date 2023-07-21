@@ -64,9 +64,9 @@ class VideoPlayer(QMainWindow):
         self.time_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # temporary -- testing file
-        vfname=r"G:\.shortcut-targets-by-id\16_yydX2VMUgk-VfcpJJ4IMz2ZCDKD6C-\Data_analysis\Mouse behavior\Videos\DLC_analysis\ASAP_video\M105\M105_S1\M105_S1.avi"
-        self.media_player.setSource(QUrl.fromLocalFile(vfname))
-        self.media_player.play()
+        # vfname=r"G:\.shortcut-targets-by-id\16_yydX2VMUgk-VfcpJJ4IMz2ZCDKD6C-\Data_analysis\Mouse behavior\Videos\DLC_analysis\ASAP_video\M105\M105_S1\M105_S1.avi"
+        # self.media_player.setSource(QUrl.fromLocalFile(vfname))
+        # self.media_player.play()
 
         # layout setting
         layout_files = QHBoxLayout()
@@ -152,10 +152,22 @@ class VideoPlayer(QMainWindow):
             print(cur_frame,len(self.df))
             return
         else:
-            if self.df['centerbody3_movement_state'][cur_frame]==1:
+            if self.df['movement_state'][cur_frame] == 1:
                 self.nest.setText('immobility')
                 self.nest.setFixedSize(150, 30)
                 self.nest.setStyleSheet("background-color: yellow;border: 1px solid black;")
+            elif np.isnan(self.df['movement_state'][cur_frame]):
+                self.nest.setText('NaN')
+                self.nest.setFixedSize(150, 30)
+                self.nest.setStyleSheet("background-color: gray;border: 1px solid black;")
+            elif self.df['movement_state'][cur_frame] == 2:
+                self.nest.setText('locomotion')
+                self.nest.setFixedSize(150, 30)
+                self.nest.setStyleSheet("background-color: red;border: 1px solid black;")
+            elif self.df['movement_state'][cur_frame] == 0:
+                self.nest.setText('non-loco')
+                self.nest.setFixedSize(150, 30)
+                self.nest.setStyleSheet("background-color: lightgreen;border: 1px solid black;")
             else:
                 self.nest.setText('...')
                 self.nest.setFixedSize(150, 30)
@@ -222,9 +234,9 @@ class Plot_Figures(QMainWindow):
         #                   *to be modified as interface*
 
         # temporary -- testing file
-        lfname=r"G:\.shortcut-targets-by-id\16_yydX2VMUgk-VfcpJJ4IMz2ZCDKD6C-\Data_analysis\Mouse behavior\Videos\DLC_analysis\ASAP_video\M105\M105_S1\M105_S1_data.csv"
-        self.Dataframe = pd.read_csv(lfname)
-        self.update_plots(0)
+        # lfname=r"G:\.shortcut-targets-by-id\16_yydX2VMUgk-VfcpJJ4IMz2ZCDKD6C-\Data_analysis\Mouse behavior\Videos\DLC_analysis\ASAP_video\M105\M105_S1\M105_S1_data.csv"
+        # self.Dataframe = pd.read_csv(lfname)
+        # self.update_plots(0)
 
         # layout setting
         fig_layout1 = QHBoxLayout()
@@ -262,7 +274,7 @@ class Plot_Figures(QMainWindow):
         label_fname, _ = QFileDialog.getOpenFileName(self, 'Open file', "", "*.csv")
         label_fname = r'' + label_fname
         self.Dataframe = pd.read_csv(label_fname)
-        self.update_plots(0)
+        # self.update_plots(0)
 
 
 class MainWindow(QMainWindow):
@@ -277,6 +289,7 @@ class MainWindow(QMainWindow):
         # select label file
         self.label_fname = ''
         self.video_player.select_label_button.clicked.connect(self.figures.select_label)
+        self.video_player.select_label_button.clicked.connect(self.df_upd)
 
         # update the figures when video changes
         # self.video_player.media_player.positionChanged.connect(self.figures.update_plots)
@@ -293,6 +306,8 @@ class MainWindow(QMainWindow):
         widget.setLayout(layout)
         self.setCentralWidget(widget)
 
+    def df_upd(self):
+        self.video_player.df = self.figures.Dataframe
 
 
 if __name__ == "__main__":

@@ -57,7 +57,7 @@ def main(folder_path=None):
     if len(folder_path) == 0:
         print('User Exited.')
         quit()
-    print('Current folder is',os.path.basename(folder_path))
+    print('Current folder is [',os.path.basename(folder_path),'].')
     avi_files = []
     video_fname=''
     for file in os.listdir(folder_path):
@@ -104,7 +104,7 @@ def main(folder_path=None):
     re_transform = False
     laser = False
     name4traj = 'centerbody3'
-    name4kin = ['leftear', 'rightear']
+    name4kin = ['leftear', 'rightear','centerbody3','nose','headstage','centerbody2','centerbody4']
     # -------------------------------------------------------------------#
     try:
         # Generate likelihood plot-------------------------------------------#
@@ -164,11 +164,6 @@ def main(folder_path=None):
                 Dataframe = cal_v_a(Dataframe,name,pixel_per_cm,window=11)
                 flag_write = True
                 print('[DONE: velocity & acceleration of ' + name+ ']')
-        if re_gen_va or name4traj+'_v' not in Dataframe.columns:
-            print('Updating csv file.. [NEW: velocity & acceleration of ' + name4traj+ ']')
-            Dataframe = cal_v_a(Dataframe,name4traj,pixel_per_cm,window=11)
-            flag_write = True
-            print('[DONE: velocity & acceleration of ' + name4traj+ ']')
 
         # Nest kinetics analysis (movement v.s. nest state)
         if True or not os.path.exists(dataname+'_Moving_ana.mat') or not os.path.exists(dataname+'_nest_ana.png'):
@@ -180,8 +175,8 @@ def main(folder_path=None):
 
         # Calculate variance of trajectory
         for name in name4kin:
-            if True:
-            # if name+'_var' not in Dataframe.columns:
+            # if True:
+            if name+'_var' not in Dataframe.columns:
                 print('Updating csv file.. [NEW: variance of trajectory of ' + name+ ']')
                 Dataframe = cal_var_traj(Dataframe,name,pixel_per_cm,window=11)
                 flag_write = True
