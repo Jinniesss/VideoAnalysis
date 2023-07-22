@@ -22,6 +22,11 @@ for i = 1:numel(folders)
     s = get_session(folder);
     sessions = vertcat(sessions,s);
     df_path = [folder '_phot_ana.mat'];
+    
+    if ~exist(df_path, 'file')
+        photometry_nest;
+    end
+
     df = load(df_path);
     data = df.phot_ana;
     phot_sessions = vertcat(phot_sessions,data);

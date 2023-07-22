@@ -51,11 +51,14 @@ def nest_ana(Dataframe, name, pixel_per_cm, dataname, window=3, show=True):
     v_out_nest_frame_num = 0
     in_nest_distance = 0
     out_nest_distance = 0
+
+    columns = ['nest',name+'_x',name+'_y',name+'_likelihood']
+    new_Df = Dataframe[columns].copy()
     # Identify the groups based on the change in values of column 'nest'
-    groups = (Dataframe['nest'].diff() != 0).cumsum()
+    groups = (new_Df['nest'].diff() != 0).cumsum()
 
     # Group the DataFrame based on the identified groups
-    grouped_df = Dataframe.groupby(groups)
+    grouped_df = new_Df.groupby(groups)
 
     for group_num, group_data in grouped_df:
         cur_nest_state = group_data['nest'][group_data.index[0]]
@@ -77,11 +80,8 @@ def nest_ana(Dataframe, name, pixel_per_cm, dataname, window=3, show=True):
         else:
             print('error:')
             print(group_data['nest'])
-
     moving_rate_in = in_nest_distance / v_in_nest_frame_num / pixel_per_cm * freq  # cm per sec
     moving_rate_out = out_nest_distance / v_out_nest_frame_num / pixel_per_cm * freq
-    moving_rate_tot = (in_nest_distance + out_nest_distance) / (
-                v_in_nest_frame_num + v_out_nest_frame_num) / pixel_per_cm * freq
 
     axs[2].plot([0, 1], [moving_rate_in, moving_rate_out], '-', lw=2, color='gray')
     axs[2].bar(0, moving_rate_in, color='blue', alpha=0.3, width=0.5)

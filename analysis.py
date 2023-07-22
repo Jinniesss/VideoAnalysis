@@ -175,8 +175,8 @@ def main(folder_path=None):
 
         # Calculate variance of trajectory
         for name in name4kin:
-            # if True:
-            if name+'_var' not in Dataframe.columns:
+            if True:
+            # if name+'_var' not in Dataframe.columns:
                 print('Updating csv file.. [NEW: variance of trajectory of ' + name+ ']')
                 Dataframe = cal_var_traj(Dataframe,name,pixel_per_cm,window=11)
                 flag_write = True

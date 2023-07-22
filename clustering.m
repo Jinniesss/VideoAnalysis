@@ -1,6 +1,4 @@
-close all;
-clear all;
-
+function clustering
 %%     
 load("check_FP\labels.mat",'labels');  % 1/2/3 -- R/W/N
 load("check_FP\labels_timecrop.mat",'labels_timecrop');     % hour
@@ -39,7 +37,7 @@ for n = 1:numel(names)
             continue;
         end
         if isempty(label_idx)
-            label_idx = length(labels_timecrop);
+            label_idx = length(labels_timecrop)-1;
         end
     
         cur_var = var_traj(i);
