@@ -45,32 +45,12 @@ labels_change_frame(end) = labels_change_frame(end) +5*freq;    % 5--bout length
 
 slice_start = 0;
 slice_end = 0;
-% in_phot_all = [];
-% out_phot_all = [];
-in_loco_all = [];
-in_nonl_all = [];
-in_immo_all = [];
-out_loco_all = [];
-out_nonl_all = [];
-out_immo_all = [];
-in_nonl_r_all = [];
-in_nonl_w_all = [];
-in_nonl_n_all = [];
-in_immo_r_all = [];
-in_immo_w_all = [];
-in_immo_n_all = [];
-in_loco_r_all = [];
-in_loco_w_all = [];
-in_loco_n_all = [];
-out_nonl_r_all = [];
-out_nonl_w_all = [];
-out_nonl_n_all = [];
-out_immo_r_all = [];
-out_immo_w_all = [];
-out_immo_n_all = [];
-out_loco_r_all = [];
-out_loco_w_all = [];
-out_loco_n_all = [];
+in_loco_all = [];in_nonl_all = [];in_immo_all = [];out_loco_all = [];out_nonl_all = [];out_immo_all = [];
+in_nonl_r_all = [];in_nonl_w_all = [];in_nonl_n_all = [];in_immo_r_all = [];in_immo_w_all = [];in_immo_n_all = [];
+in_loco_r_all = [];in_loco_w_all = [];in_loco_n_all = [];out_nonl_r_all = [];out_nonl_w_all = [];out_nonl_n_all = [];
+out_immo_r_all = [];out_immo_w_all = [];out_immo_n_all = [];out_loco_r_all = [];out_loco_w_all = [];out_loco_n_all = [];
+
+t_LM = 0;   t_NL = 0;   t_QW = 0;
 
 state_change_frame = horzcat(nest_state_change_frame,labels_change_frame,mov_state_change_frame);
 state_change_frame = unique(state_change_frame);
@@ -106,6 +86,7 @@ for i = 1:length(state_change_frame)
 
     slice_start_hour = max(phot_timehourcrop(1),slice_start_hour);
     slice_end_hour = min(phot_timehourcrop(end),slice_end_hour);
+    slice_dur_hour =  0-slice_start_hour + slice_end_hour; 
 
     % find corresponding start/end timepoint in phot
     phot_start_ind = find(phot_timehourcrop>=slice_start_hour,1);
@@ -202,93 +183,106 @@ for i = 1:length(state_change_frame)
         error_num = error_num + slice_end - slice_start + 1;   % frame
         error_frame = horzcat(error_frame,slice_start/freq);   % unit: second
     end
-
+    
+    if cur_label == 2
+        switch cur_mov_state
+            case 1
+                t_QW = t_QW + slice_dur_hour;
+            case 0
+                t_NL = t_NL + slice_dur_hour;
+            case 2
+                t_LM = t_LM + slice_dur_hour;
+        end
+    end
 end
 error_rate = error_num / frame_len;
+
+
+%%
+% data_s = [mean(in_loco_n_all), mean(in_loco_r_all), mean(in_loco_w_all);
+%         mean(out_loco_n_all), mean(out_loco_r_all), mean(out_loco_w_all);
+%         mean(in_nonl_n_all), mean(in_nonl_r_all), mean(in_nonl_w_all);
+%         mean(out_nonl_n_all), mean(out_nonl_r_all), mean(out_nonl_w_all);
+%         mean(in_immo_n_all), mean(in_immo_r_all), mean(in_immo_w_all);
+%         mean(out_immo_n_all), mean(out_immo_r_all), mean(out_immo_w_all);];
+
+in_LM = mean(horzcat(in_loco_n_all,in_loco_r_all,in_loco_w_all));
+in_NL = mean(horzcat(in_nonl_n_all,in_nonl_r_all,in_nonl_w_all));
+in_QW = mean(in_immo_w_all);
+in_NREM = mean(horzcat(in_loco_n_all,in_nonl_n_all,in_immo_n_all));
+in_REM = mean(horzcat(in_loco_r_all,in_nonl_r_all,in_immo_r_all));
+
+out_LM = mean(horzcat(out_loco_n_all, out_loco_r_all, out_loco_w_all));
+out_NL = mean(horzcat(out_nonl_n_all, out_nonl_r_all, out_nonl_w_all));
+out_QW = mean(out_immo_w_all);
+out_NREM = mean(horzcat(out_loco_n_all, out_nonl_n_all, out_immo_n_all));
+out_REM = mean(horzcat(out_loco_r_all, out_nonl_r_all, out_immo_r_all));
+
+total_LM = mean(horzcat(in_loco_n_all, in_loco_r_all, in_loco_w_all, out_loco_n_all, out_loco_r_all, out_loco_w_all));
+total_NL = mean(horzcat(in_nonl_n_all, in_nonl_r_all, in_nonl_w_all, out_nonl_n_all, out_nonl_r_all, out_nonl_w_all));
+total_QW = mean(horzcat(in_immo_w_all, out_immo_w_all));
+total_NREM = mean(horzcat(in_loco_n_all, in_nonl_n_all, in_immo_n_all, out_loco_n_all, out_nonl_n_all, out_immo_n_all));
+total_REM = mean(horzcat(in_loco_r_all, in_nonl_r_all, in_immo_r_all, out_loco_r_all, out_nonl_r_all, out_immo_r_all));
+
+data_s = [in_LM, in_NL, in_QW, in_NREM, in_REM,...
+          out_LM, out_NL, out_QW, out_NREM, out_REM,...
+          total_LM, total_NL, total_QW, total_NREM, total_REM,...
+          t_LM, t_NL, t_QW];
+
+data_s = reshape(data_s.', 1, []);
+% variables = {'in_loco_n_mean', 'in_loco_r_mean', 'in_loco_w_mean',...
+%              'out_loco_n_mean', 'out_loco_r_mean', 'out_loco_w_mean',...
+%              'in_nonl_n_mean', 'in_nonl_r_mean', 'in_nonl_w_mean',...
+%              'out_nonl_n_mean', 'out_nonl_r_mean', 'out_nonl_w_mean',...
+%              'in_immo_n_mean', 'in_immo_r_mean', 'in_immo_w_mean',...
+%              'out_immo_n_mean', 'out_immo_r_mean', 'out_immo_w_mean'};
+% 
+
+variables = {'in_LM', 'in_NL', 'in_QW', 'in_NREM', 'in_REM',...
+             'out_LM', 'out_NL', 'out_QW', 'out_NREM', 'out_REM',...
+             'total_LM', 'total_NL', 'total_QW', 'total_NREM', 'total_REM',...
+             't_LM', 't_NL', 't_QW'};
+
+phot_behv = array2table(data_s,'VariableNames',variables);
+save([name '_phot_vs_beh.mat'], 'phot_behv');
+
 %% In nest -- phot v.s. mov_states
-figure(1);
+figure();
 set(gcf, 'Position', [100, 100, 1200, 400]);
-mean1 = mean(in_loco_all);
-mean2 = mean(in_nonl_all);
-mean3 = mean(in_immo_all);
-sd1 = se(in_loco_all);
-sd2 = se(in_nonl_all);
-sd3 = se(in_immo_all);
 
 ax2 = subplot(1,3,1);
 hold(ax2, 'on');
-bar(ax2, [1, 2,3], [mean1, mean2,mean3]);
-hold(ax2, 'off');
-
-% Plot error bars for standard deviation
-hold(ax2, 'on');
-errorbar(ax2, [1, 2,3], [mean1, mean2,mean3], [sd1, sd2,sd3], '.', 'LineWidth', 1);
+bar(ax2, [1,2,3,4,5], [in_LM, in_NL,in_QW,in_NREM,in_REM]);
 hold(ax2, 'off');
 
 % Customize the plot
 ylabel('Photometry');
-xticks(ax2, [1,2,3]);
-xticklabels(ax2, {'Locomotion', 'Non-locomotor','Immobility'});
+xticks(ax2, [1,2,3,4,5]);
+xticklabels(ax2, {'Locomotion', 'Non-locomotor','Quiet Wakefulness','NREM','REM'});
 grid(ax2, 'off');
 title('In Nest')
 % saveas(gcf, [name '_phot_in_nest.png']);
 
 %% Out of nest -- phot v.s. mov_states
-mean1 = mean(out_loco_all);
-mean2 = mean(out_nonl_all);
-mean3 = mean(out_immo_all);
-sd1 = se(out_loco_all);
-sd2 = se(out_nonl_all);
-sd3 = se(out_immo_all);
-
 ax1 = subplot(1,3,2);
 hold(ax1, 'on');
-bar(ax1, [1, 2,3], [mean1, mean2, mean3]);
-hold(ax1, 'off');
-
-% Plot error bars for standard deviation
-hold(ax1, 'on');
-errorbar(ax1, [1, 2,3], [mean1, mean2, mean3], [sd1, sd2, sd3], '.', 'LineWidth', 1);
+bar(ax1, [1, 2,3,4,5], [out_LM, out_NL,out_QW,out_NREM,out_REM]);
 hold(ax1, 'off');
 
 % Customize the plot
 ylabel('Photometry');
-xticks(ax1, [1, 2, 3]);
-xticklabels(ax1, {'Locomotion', 'Non-locomotor','Immobility'});
+xticks(ax1, [1, 2, 3 ,4,5]);
+xticklabels(ax1, {'Locomotion', 'Non-locomotor','Quiet Wakefulness','NREM','REM'});
 grid(ax1, 'off');
 title('Out of Nest');
 
 %% 
 subplot(1,3,3)
-t_loco_w = length(in_loco_w_all) + length(out_loco_w_all);
-t_nonl_w = length(in_nonl_w_all) + length(out_nonl_w_all);
-t_immo_w = length(in_immo_w_all) + length(out_immo_w_all);
-time_w = horzcat(t_loco_w,t_nonl_w,t_immo_w);
-time_w = time_w/sum(time_w);
+time_w = horzcat(t_LM,t_NL,t_QW);
 bar(time_w);
-ylabel('percentage');
+ylabel('time(hour)');
 title('Time of behavioral states during Wakefulness');
 xticks(1:3);
-xticklabels({'Locomotion', 'Non-locomotor', 'Immobility'});
+xticklabels({'Locomotion', 'Non-locomotor', 'Quiet Wakefulness'});
 
 saveas(gcf, [name '_phot_vs_behv.png']);
-
-%%
-data_s = [mean(in_loco_n_all), mean(in_loco_r_all), mean(in_loco_w_all);
-        mean(out_loco_n_all), mean(out_loco_r_all), mean(out_loco_w_all);
-        mean(in_nonl_n_all), mean(in_nonl_r_all), mean(in_nonl_w_all);
-        mean(out_nonl_n_all), mean(out_nonl_r_all), mean(out_nonl_w_all);
-        mean(in_immo_n_all), mean(in_immo_r_all), mean(in_immo_w_all);
-        mean(out_immo_n_all), mean(out_immo_r_all), mean(out_immo_w_all);];
-
-data_s = reshape(data_s.', 1, []);
-variables = {'in_loco_n_mean', 'in_loco_r_mean', 'in_loco_w_mean',...
-             'out_loco_n_mean', 'out_loco_r_mean', 'out_loco_w_mean',...
-             'in_nonl_n_mean', 'in_nonl_r_mean', 'in_nonl_w_mean',...
-             'out_nonl_n_mean', 'out_nonl_r_mean', 'out_nonl_w_mean',...
-             'in_immo_n_mean', 'in_immo_r_mean', 'in_immo_w_mean',...
-             'out_immo_n_mean', 'out_immo_r_mean', 'out_immo_w_mean'};
-% 
-phot_behv = array2table(data_s,'VariableNames',variables);
-save([name '_phot_vs_beh.mat'], 'phot_behv');
-
