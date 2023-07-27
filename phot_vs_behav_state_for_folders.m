@@ -1,5 +1,7 @@
 clear;
 
+redo=1;
+
 path = pwd;
 folders = dir(path);
 folders = folders([folders.isdir]);  % Filter out non-folders
@@ -16,15 +18,14 @@ for i = 1:numel(folders)
     containsNumber = any(regexp(folder, '\d', 'once'));
     if ~containsNumber 
         continue;
-        
     end
     cd(folder);
     s = get_session(folder);
     sessions = vertcat(sessions,s);
 
     df_path = [folder '_phot_vs_beh.mat'];
-    if ~exist(df_path, 'file')
-        phot_vs_behav_state();
+    if ~exist(df_path, 'file') || redo==1
+        phot_vs_behav_state(redo);
     end
     df = load(df_path);
     data = df.phot_behv;
@@ -45,11 +46,11 @@ save([m '_phot_beh_summary.mat'],"phot_beh_sum")
 close all;
 figure(1);
 set(gcf, 'Position', [100, 100, 1200, 400]);
-mean1 = mean(phot_beh_sum.in_LM);
-mean2 = mean(phot_beh_sum.in_NL);
-mean3 = mean(phot_beh_sum.in_QW);
-mean4 = mean(phot_beh_sum.in_NREM);
-mean5 = mean(phot_beh_sum.in_REM);
+mean1 = nanmean(phot_beh_sum.in_LM);
+mean2 = nanmean(phot_beh_sum.in_NL);
+mean3 = nanmean(phot_beh_sum.in_QW);
+mean4 = nanmean(phot_beh_sum.in_NREM);
+mean5 = nanmean(phot_beh_sum.in_REM);
 sd1 = se(phot_beh_sum.in_LM);
 sd2 = se(phot_beh_sum.in_NL);
 sd3 = se(phot_beh_sum.in_QW);
@@ -75,11 +76,11 @@ title('In Nest')
 % saveas(gcf, [name '_phot_in_nest.png']);
 
 %% Out of nest -- phot v.s. mov_states
-mean1 = mean(phot_beh_sum.out_LM);
-mean2 = mean(phot_beh_sum.out_NL);
-mean3 = mean(phot_beh_sum.out_QW);
-mean4 = mean(phot_beh_sum.out_NREM);
-mean5 = mean(phot_beh_sum.out_REM);
+mean1 = nanmean(phot_beh_sum.out_LM);
+mean2 = nanmean(phot_beh_sum.out_NL);
+mean3 = nanmean(phot_beh_sum.out_QW);
+mean4 = nanmean(phot_beh_sum.out_NREM);
+mean5 = nanmean(phot_beh_sum.out_REM);
 sd1 = se(phot_beh_sum.out_LM);
 sd2 = se(phot_beh_sum.out_NL);
 sd3 = se(phot_beh_sum.out_QW);
@@ -105,9 +106,9 @@ title('Out of Nest');
 
 %% 
 ax3 = subplot(1,3,3);
-mean1 = mean(phot_beh_sum.t_LM);
-mean2 = mean(phot_beh_sum.t_NL);
-mean3 = mean(phot_beh_sum.t_QW);
+mean1 = nanmean(phot_beh_sum.t_LM);
+mean2 = nanmean(phot_beh_sum.t_NL);
+mean3 = nanmean(phot_beh_sum.t_QW);
 sd1 = se(phot_beh_sum.t_LM);
 sd2 = se(phot_beh_sum.t_NL);
 sd3 = se(phot_beh_sum.t_QW);

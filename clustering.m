@@ -1,4 +1,4 @@
-function clustering
+
 %%     
 load("check_FP\labels.mat",'labels');  % 1/2/3 -- R/W/N
 load("check_FP\labels_timecrop.mat",'labels_timecrop');     % hour
@@ -21,6 +21,7 @@ data = readtable(csv_fname);
 s = size(data);
 l = s(1);
 new_data = table(data.nest,'VariableNames',{'nest'});
+sleep_state = zeros(1,l);
 for n = 1:numel(names)
     bpname = names(n);
     colname = strcat(bpname,'_movement_state');
@@ -33,18 +34,20 @@ for n = 1:numel(names)
     for i = 1:length(var_traj)
         label_idx = find(labels_timecrop>i/freq/3600,1)-1;
         if label_idx == 0
-            labels_frame(i) = 0;
             continue;
         end
         if isempty(label_idx)
             label_idx = length(labels_timecrop)-1;
         end
-    
+        label = labels(label_idx);
+        if n==1
+            sleep_state(i)=label;
+        end
         cur_var = var_traj(i);
         if isnan(cur_var)
             continue;
         end
-        label = labels(label_idx);
+        
     
         labels_frame(i) = label;
     
@@ -55,6 +58,7 @@ for n = 1:numel(names)
         elseif label == 3
             nrem_var = horzcat(nrem_var,cur_var);
         end
+        
     end
     
     %%
@@ -89,6 +93,12 @@ for n = 1:numel(names)
     %     data = removevars(data,colname);
     % end
     new_data = addvars(new_data, mov_state_frame.', 'NewVariableNames', strcat(bpname,'_movement_state'));
+    if n==1
+        if ismember('sleep_state',new_data.Properties.VariableNames)
+            new_data = removevars(new_data,'sleep_state');
+        end
+        new_data = addvars(new_data, sleep_state.', 'NewVariableNames','sleep_state');
+    end
 end
 %%
 if ismember('movement_state',new_data.Properties.VariableNames)
@@ -102,15 +112,15 @@ for i = 1:l
         state = new_data.(strcat(bpname,'_movement_state'));
         states(n) = state(i);
     end
-    if all(isnan(states))
-        mov_state(i) = NaN;
+    if sum(isnan(states)) >= bp_num-1
+        mov_state(i) = -1;
         continue;
     end
-    if sum(states==2)+sum(isnan(states)) >= bp_num-1
+    if sum(states==2)>1 && sum(states==2)+sum(isnan(states)) >= bp_num-1
         mov_state(i) = 2;
         continue;
     end
-    if sum(states==1)+sum(isnan(states)) >= bp_num-1
+    if sum(states==1)>1 && sum(states==1)+sum(isnan(states)) >= bp_num-1
         mov_state(i) = 1;
     end
 end
@@ -118,7 +128,7 @@ end
 mov_state_diff = diff(mov_state);
 mov_state_change_frame = find(mov_state_diff ~= 0);  % index of the last frame of each segment
 mov_state_change_frame = horzcat(mov_state_change_frame,length(mov_state));
-bouts_thre = 9;
+bouts_thre = 10;
 for bout_thre = 1:bouts_thre
     bout_len = horzcat(mov_state_change_frame(1), diff(mov_state_change_frame));
     ind_bouts_tbr = find(bout_len<=bout_thre);
@@ -129,7 +139,7 @@ for bout_thre = 1:bouts_thre
         end
         bout_first = mov_state_change_frame(bout_num-1)+1;
         bout_last = mov_state_change_frame(bout_num);
-        if isnan(mov_state(bout_first-1))
+        if mov_state(bout_first-1)==-1
             continue;
         elseif bout_last == length(mov_state)
             continue;

@@ -31,18 +31,29 @@ class VideoPlayer(QMainWindow):
         self.select_label_button = QPushButton("Select Labels")
         self.select_label_button.setFixedSize(100, 30)
 
+        # 'nest' is actually behavioural state
         self.nest = QLabel()
         self.nest.setText("NONE")
         self.nest.setFixedSize(80, 30)
         self.nest.setStyleSheet("background-color: gray;border: 1px solid black;")
         self.nest.setFont(QFont('Arial',20))
         self.nest.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        # font = QFont()
-        # font.setPointSize(12)  # Set the font size
-        # palette = QPalette()
-        # palette.setColor(QPalette., QColor("red"))  # Set the font color
-        # self.nest.setFont(font)
-        # self.nest.setPalette(palette)
+
+        # 'nest1' is actually nest state
+        self.nest1 = QLabel()
+        self.nest1.setText("XXX")
+        self.nest1.setFixedSize(60, 30)
+        self.nest1.setStyleSheet("background-color: gray;border: 1px solid black;")
+        self.nest1.setFont(QFont('Arial', 20))
+        self.nest1.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        # 'nest2' is actually sleep state
+        self.nest2 = QLabel()
+        self.nest2.setText("XXX")
+        self.nest2.setFixedSize(85, 30)
+        self.nest2.setStyleSheet("background-color: gray;border: 1px solid black;")
+        self.nest2.setFont(QFont('Arial', 20))
+        self.nest2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.start_button = QPushButton("Start▶️")
         self.start_button.clicked.connect(self.start_video)
@@ -73,6 +84,8 @@ class VideoPlayer(QMainWindow):
         layout_files.addWidget(self.select_video_button)
         layout_files.addWidget(self.select_label_button)
         layout_files.addWidget(self.nest)
+        layout_files.addWidget(self.nest1)
+        layout_files.addWidget(self.nest2)
 
         layout_playbuts = QHBoxLayout()
         layout_playbuts.addWidget(self.start_button)
@@ -127,19 +140,23 @@ class VideoPlayer(QMainWindow):
         if len(self.df)==0:
             return
         if cur_frame>len(self.df):
-            self.nest.setText("ERROR")
-            self.nest.setFixedSize(80, 30)
-            self.nest.setStyleSheet("background-color: yellow;border: 1px solid black;")
+            self.nest1.setText("ERROR")
+            self.nest1.setFixedSize(80, 30)
+            self.nest1.setStyleSheet("background-color: yellow;border: 1px solid black;")
             print(cur_frame,len(self.df))
             return
         if self.df['nest'][cur_frame] == 1:
-            self.nest.setText("IN")
-            self.nest.setFixedSize(80, 30)
-            self.nest.setStyleSheet("background-color: lightgreen;border: 1px solid black;")
+            self.nest1.setText("IN")
+            self.nest1.setFixedSize(80, 30)
+            self.nest1.setStyleSheet("background-color: pink;border: 1px solid black;")
+        elif self.df['nest'][cur_frame] == 0:
+            self.nest1.setText("OUT")
+            self.nest1.setFixedSize(80, 30)
+            self.nest1.setStyleSheet("background-color: lightblue;border: 1px solid black;")
         else:
-            self.nest.setText("OUT")
-            self.nest.setFixedSize(80, 30)
-            self.nest.setStyleSheet("background-color: red;border: 1px solid black;")
+            self.nest1.setText("NaN")
+            self.nest1.setFixedSize(80, 30)
+            self.nest1.setStyleSheet("background-color: gray;border: 1px solid black;")
 
     def update_var(self,position):
         cur_frame = int(position/100)
@@ -171,10 +188,37 @@ class VideoPlayer(QMainWindow):
             else:
                 self.nest.setText('...')
                 self.nest.setFixedSize(150, 30)
-                self.nest.setStyleSheet("background-color: lightgreen;border: 1px solid black;")
+                self.nest.setStyleSheet("background-color: gray;border: 1px solid black;")
             # self.nest.setText(str(self.df['centerbody3_var'][cur_frame])[:6])
             # self.nest.setFixedSize(150, 30)
             # self.nest.setStyleSheet("background-color: white;border: 1px solid black;")
+
+    def update_sleep(self,position):
+        cur_frame = int(position/100)
+        if len(self.df)==0:
+            return
+        if cur_frame>len(self.df):
+            self.nest2.setText("ERROR")
+            # self.nest2.setFixedSize(80, 30)
+            self.nest2.setStyleSheet("background-color: red;border: 1px solid black;")
+            print(cur_frame,len(self.df))
+            return
+        if self.df['sleep_state'][cur_frame] == 1:
+            self.nest2.setText("REM")
+            # self.nest2.setFixedSize(60, 30)
+            self.nest2.setStyleSheet("background-color: green;border: 1px solid black;")
+        elif self.df['sleep_state'][cur_frame] == 2:
+            self.nest2.setText("WAKE")
+            # self.nest2.setFixedSize(80, 30)
+            self.nest2.setStyleSheet("background-color: blue;border: 1px solid black;")
+        elif self.df['sleep_state'][cur_frame] == 3:
+            self.nest2.setText("NREM")
+            # self.nest2.setFixedSize(80, 30)
+            self.nest2.setStyleSheet("background-color: yellow;border: 1px solid black;")
+        else:
+            self.nest2.setText("NONE")
+            # self.nest2.setFixedSize(80, 30)
+            self.nest2.setStyleSheet("background-color: gray;border: 1px solid black;")
 
 class MplCanvas(FigureCanvasQTAgg):
     def __init__(self):
@@ -293,9 +337,9 @@ class MainWindow(QMainWindow):
 
         # update the figures when video changes
         # self.video_player.media_player.positionChanged.connect(self.figures.update_plots)
-        # self.video_player.media_player.positionChanged.connect(self.video_player.update_nest)
+        self.video_player.media_player.positionChanged.connect(self.video_player.update_nest)
         self.video_player.media_player.positionChanged.connect(self.video_player.update_var)
-
+        self.video_player.media_player.positionChanged.connect(self.video_player.update_sleep)
         # set the layout
         layout = QHBoxLayout()
 

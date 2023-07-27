@@ -1,4 +1,4 @@
-function phot_vs_behav_state
+function phot_vs_behav_state(redo)
 load('check_FP\phot_timehourcrop.mat','phot_timehourcrop');  % hour
 load("check_FP\photometry.mat",'photometry');          
 load("check_FP\labels.mat",'labels');  % 1/2/3
@@ -15,15 +15,16 @@ freq = 10; % frames per sec
 
 % load dataframe
 csv_fname = fullfile(folder, [name '_mov_state.csv']);
-if ~exist(csv_fname, 'file')
+if ~exist(csv_fname, 'file') || redo==1
     disp(name);
     disp('clustering...');
     clustering();
 end
-
+csv_fname = fullfile(folder, [name '_mov_state.csv']);
 data_n = readtable(csv_fname);
 nest_state = data_n.nest.';
 % In nest: 1; Out of nest: 0; Low-likelihood: NaN
+data_n = readtable(csv_fname);
 mov_state = data_n.movement_state.';
 
 frame_len = length(nest_state);
@@ -38,7 +39,7 @@ mov_state_change_frame = horzcat(mov_state_change_frame,frame_len);
 labels_len = length(labels);
 labels_diff = diff(labels);
 labels_change = find(labels_diff ~= 0);     % index of 5s bout
-labels_change = horzcat(labels_change,labels_len);  
+labels_change = horzcat(labels_change,labels_len-1);  
 
 labels_change_frame = labels_timecrop(labels_change)*3600*freq;  % index of frame
 labels_change_frame(end) = labels_change_frame(end) +5*freq;    % 5--bout length of labels
