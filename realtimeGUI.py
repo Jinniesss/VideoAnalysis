@@ -105,6 +105,10 @@ class VideoPlayer(QMainWindow):
 
     def select_video(self):
         fname, _ = QFileDialog.getOpenFileName(self, 'Open file', "", "Video Files (*.mp4 *.avi *.mov *.mkv)")
+
+        if fname == "":
+            return
+
         self.media_player.setSource(QUrl.fromLocalFile(fname))
         self.media_player.play()
 
@@ -316,6 +320,10 @@ class Plot_Figures(QMainWindow):
 
     def select_label(self):
         label_fname, _ = QFileDialog.getOpenFileName(self, 'Open file', "", "*.csv")
+
+        if label_fname == "":
+            return
+
         label_fname = r'' + label_fname
         self.Dataframe = pd.read_csv(label_fname)
         # self.update_plots(0)

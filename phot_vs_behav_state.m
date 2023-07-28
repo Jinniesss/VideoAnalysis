@@ -1,11 +1,13 @@
-function phot_vs_behav_state(redo)
+
 load('check_FP\phot_timehourcrop.mat','phot_timehourcrop');  % hour
 load("check_FP\photometry.mat",'photometry');          
 load("check_FP\labels.mat",'labels');  % 1/2/3
 load("check_FP\labels_timecrop.mat",'labels_timecrop');     % hour
 addpath("H:\My Drive\workstation\BehaviorAnalysis\functions\")
 labels = labels.';
-% phot_timehourcrop = phot_timehourcrop/60;
+if old_data == 1
+    phot_timehourcrop = phot_timehourcrop/60;
+end
 
 folder = pwd;
 [~,name,~] = fileparts(folder);
@@ -14,17 +16,15 @@ folder = pwd;
 freq = 10; % frames per sec
 
 % load dataframe
-csv_fname = fullfile(folder, [name '_mov_state.csv']);
-if ~exist(csv_fname, 'file') || redo==1
+csv_fname_p = fullfile(folder, [name '_mov_state.csv']);
+if ~exist(csv_fname_p, 'file') || redo==1
     disp(name);
     disp('clustering...');
     clustering();
 end
-csv_fname = fullfile(folder, [name '_mov_state.csv']);
-data_n = readtable(csv_fname);
+data_n = readtable(csv_fname_p);
 nest_state = data_n.nest.';
 % In nest: 1; Out of nest: 0; Low-likelihood: NaN
-data_n = readtable(csv_fname);
 mov_state = data_n.movement_state.';
 
 frame_len = length(nest_state);

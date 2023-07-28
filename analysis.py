@@ -101,6 +101,7 @@ def main(folder_path=None):
     flag_write = False
     re_gen_nest = False
     re_gen_va = False
+    va_img = True
     re_transform = False
     laser = False
     name4traj = 'centerbody3'
@@ -158,15 +159,20 @@ def main(folder_path=None):
 
         # Kinetics-----------------------------------------------------------#
         # Calculate the velocity and acceleration  (v in [cm/s]; a in [g])
+        va_img_fname = dataname+'_va_plots'
         for name in name4kin:
             if re_gen_va or name+'_v' not in Dataframe.columns:
                 print('Updating csv file.. [NEW: velocity & acceleration of ' + name+ ']')
                 Dataframe = cal_v_a(Dataframe,name,pixel_per_cm,window=11)
                 flag_write = True
                 print('[DONE: velocity & acceleration of ' + name+ ']')
+            elif va_img is True:
+                if not os.path.exists(va_img_fname):
+                    os.mkdir(va_img_fname)
+                show_v_a(Dataframe,name,va_img_fname)
 
         # Nest kinetics analysis (movement v.s. nest state)
-        if True or not os.path.exists(dataname+'_Moving_ana.mat') or not os.path.exists(dataname+'_nest_ana.png'):
+        if not os.path.exists(dataname+'_Moving_ana.mat') or not os.path.exists(dataname+'_nest_ana.png'):
             print('Running nest analysis...')
             nest_ana(Dataframe,name4traj,pixel_per_cm,dataname,window=4)
             print('[DONE: nest analysis]')
@@ -175,8 +181,7 @@ def main(folder_path=None):
 
         # Calculate variance of trajectory
         for name in name4kin:
-            if True:
-            # if name+'_var' not in Dataframe.columns:
+            if name+'_var' not in Dataframe.columns:
                 print('Updating csv file.. [NEW: variance of trajectory of ' + name+ ']')
                 Dataframe = cal_var_traj(Dataframe,name,pixel_per_cm,window=11)
                 flag_write = True

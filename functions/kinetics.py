@@ -35,13 +35,35 @@ def cal_v_a(Dataframe, name,pixel_per_cm, window=11,show=True):
                 histtype='step', edgecolor='black', linewidth=1.2)
     axes[1].set_xscale('log')
     axes[1].set_xlabel('acceleration(g)')
-    fig.suptitle('window size='+str(window))
+    fig.suptitle('bodypart: '+str(name))
 
     if show == False:
         plt.clf()
         plt.close()
     else:
         plt.show()
+
+    return Dataframe
+
+
+def show_v_a(Dataframe, name,foldername):
+    # 2: Plot the distribution
+    fig, axes = plt.subplots(2, 1, figsize=(10, 8))
+    data = Dataframe[name + '_v'].dropna()
+    axes[0].hist(data, bins=np.logspace(np.log10(min(data)), np.log10(max(data)), num=1000),
+                 histtype='step', edgecolor='black', linewidth=1.2)
+    axes[0].set_xscale('log')
+    axes[0].set_xlabel('velocity(cm/s)')
+
+    data = abs(Dataframe[name+'_a'].dropna())
+    axes[1].hist(data, bins=np.logspace(np.log10(min(data)), np.log10(max(data)), num=3000),
+                histtype='step', edgecolor='black', linewidth=1.2)
+    axes[1].set_xscale('log')
+    axes[1].set_xlabel('acceleration(g)')
+    fig.suptitle('bodypart: '+str(name))
+    plt.savefig(foldername+'/'+name+'.png')
+    plt.show()
+
 
     return Dataframe
 

@@ -1,6 +1,7 @@
 clear;
 
 redo=1;
+old_data = 0;
 
 path = pwd;
 folders = dir(path);
@@ -25,7 +26,7 @@ for i = 1:numel(folders)
 
     df_path = [folder '_phot_vs_beh.mat'];
     if ~exist(df_path, 'file') || redo==1
-        phot_vs_behav_state(redo);
+        phot_vs_behav_state();
     end
     df = load(df_path);
     data = df.phot_behv;

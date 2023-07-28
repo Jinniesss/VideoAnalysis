@@ -1,8 +1,10 @@
-
 %%     
 load("check_FP\labels.mat",'labels');  % 1/2/3 -- R/W/N
 load("check_FP\labels_timecrop.mat",'labels_timecrop');     % hour
 labels = labels.';
+if old_data == 1
+    labels_timecrop = labels_timecrop/60;
+end
 
 folder = pwd;
 [~,name,~] = fileparts(folder);
@@ -16,17 +18,17 @@ nrem_var = [];
 wake_var = [];
 
 % load dataframe
-csv_fname = fullfile(folder, [name '_data.csv']);
-data = readtable(csv_fname);
-s = size(data);
+csv_fname_c = fullfile(folder, [name '_data.csv']);
+data_c = readtable(csv_fname_c);
+s = size(data_c);
 l = s(1);
-new_data = table(data.nest,'VariableNames',{'nest'});
+new_data = table(data_c.nest,'VariableNames',{'nest'});
 sleep_state = zeros(1,l);
 for n = 1:numel(names)
     bpname = names(n);
     colname = strcat(bpname,'_movement_state');
     varname = strcat(bpname,'_var');
-    var_traj = (data.(varname)).';
+    var_traj = (data_c.(varname)).';
     labels_frame = zeros(1,l);
     mov_state_frame = zeros(1,l);
     
@@ -40,6 +42,7 @@ for n = 1:numel(names)
             label_idx = length(labels_timecrop)-1;
         end
         label = labels(label_idx);
+        
         if n==1
             sleep_state(i)=label;
         end
