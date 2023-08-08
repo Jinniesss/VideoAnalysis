@@ -268,14 +268,14 @@ class Plot_Figures(QMainWindow):
         self.p1.setMinimumSize(size)
         self.p2 = MplCanvas()
         self.p2.setMinimumSize(size)
-        self.p3 = MplCanvas()
-        self.p3.setMinimumSize(size)
-        self.p4 = MplCanvas()
-        self.p4.setMinimumSize(size)
-        self.p5 = MplCanvas()
-        self.p5.setMinimumSize(size)
-        self.p6 = MplCanvas()
-        self.p6.setMinimumSize(size)
+        # self.p3 = MplCanvas()
+        # self.p3.setMinimumSize(size)
+        # self.p4 = MplCanvas()
+        # self.p4.setMinimumSize(size)
+        # self.p5 = MplCanvas()
+        # self.p5.setMinimumSize(size)
+        # self.p6 = MplCanvas()
+        # self.p6.setMinimumSize(size)
 
         self.Dataframe=''
         # time on each side of the mid-line
@@ -287,36 +287,36 @@ class Plot_Figures(QMainWindow):
         # self.update_plots(0)
 
         # layout setting
-        fig_layout1 = QHBoxLayout()
+        fig_layout1 = QVBoxLayout()
         fig_layout1.addWidget(self.p1)
         fig_layout1.addWidget(self.p2)
 
-        fig_layout2 = QHBoxLayout()
-        fig_layout2.addWidget(self.p3)
-        fig_layout2.addWidget(self.p4)
+        # fig_layout2 = QHBoxLayout()
+        # fig_layout2.addWidget(self.p3)
+        # fig_layout2.addWidget(self.p4)
 
-        fig_layout3 = QHBoxLayout()
-        fig_layout3.addWidget(self.p5)
-        fig_layout3.addWidget(self.p6)
+        # fig_layout3 = QHBoxLayout()
+        # fig_layout3.addWidget(self.p5)
+        # fig_layout3.addWidget(self.p6)
 
         fig_layout = QVBoxLayout()
         fig_layout.addLayout(fig_layout1)
-        fig_layout.addLayout(fig_layout2)
-        fig_layout.addLayout(fig_layout3)
+        # fig_layout.addLayout(fig_layout2)
+        # fig_layout.addLayout(fig_layout3)
 
         container = QWidget()
         container.setLayout(fig_layout)
         self.setCentralWidget(container)
 
     def update_plots(self,position):
-        return          # temporary
+        # return          # temporary
         if len(self.Dataframe) != 0:
-            self.p1.update_plot(position,self.Dataframe['velocity'],'velocity')
-            self.p2.update_plot(position,self.Dataframe['acceleration'],'acceleration')
-            self.p3.update_plot(position,self.Dataframe['angle_left'],'angle_left')
-            self.p4.update_plot(position, self.Dataframe['angle_right'], 'angle_right')
-            self.p5.update_plot(position, self.Dataframe['angle_velocity'], 'angle_velocity')
-            self.p6.update_plot(position, self.Dataframe['angle_acceleration'], 'angle_acceleration')
+            self.p1.update_plot(position,self.Dataframe['nose_v'],'velocity')
+            self.p2.update_plot(position,self.Dataframe['nose_a'],'acceleration')
+            # self.p3.update_plot(position,self.Dataframe['angle_left'],'angle_left')
+            # self.p4.update_plot(position, self.Dataframe['angle_right'], 'angle_right')
+            # self.p5.update_plot(position, self.Dataframe['angle_velocity'], 'angle_velocity')
+            # self.p6.update_plot(position, self.Dataframe['angle_acceleration'], 'angle_acceleration')
 
     def select_label(self):
         label_fname, _ = QFileDialog.getOpenFileName(self, 'Open file', "", "*.csv")
@@ -326,7 +326,7 @@ class Plot_Figures(QMainWindow):
 
         label_fname = r'' + label_fname
         self.Dataframe = pd.read_csv(label_fname)
-        # self.update_plots(0)
+        self.update_plots(0)
 
 
 class MainWindow(QMainWindow):
@@ -344,15 +344,15 @@ class MainWindow(QMainWindow):
         self.video_player.select_label_button.clicked.connect(self.df_upd)
 
         # update the figures when video changes
-        # self.video_player.media_player.positionChanged.connect(self.figures.update_plots)
-        self.video_player.media_player.positionChanged.connect(self.video_player.update_nest)
-        self.video_player.media_player.positionChanged.connect(self.video_player.update_var)
-        self.video_player.media_player.positionChanged.connect(self.video_player.update_sleep)
+        self.video_player.media_player.positionChanged.connect(self.figures.update_plots)
+        # self.video_player.media_player.positionChanged.connect(self.video_player.update_nest)
+        # self.video_player.media_player.positionChanged.connect(self.video_player.update_var)
+        # self.video_player.media_player.positionChanged.connect(self.video_player.update_sleep)
         # set the layout
         layout = QHBoxLayout()
 
         layout.addWidget(self.video_player)
-        # layout.addWidget(self.figures)
+        layout.addWidget(self.figures)
 
         widget = QWidget()
         widget.setLayout(layout)

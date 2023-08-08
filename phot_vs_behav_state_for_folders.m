@@ -1,5 +1,5 @@
 clear;
-
+% run this script at the mouse folder with session folders (e.g. M111)
 redo=1;
 old_data = 0;
 

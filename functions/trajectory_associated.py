@@ -1,3 +1,5 @@
+import scipy
+
 from functions.roi_associated import *
 import matplotlib.pyplot as plt
 from shapely.geometry import Polygon
@@ -76,8 +78,9 @@ def center_of_gravity(df):
     return df
 
 def calculate_transformation(frame,Dataframe):
+
     frame_c = frame.copy()
-    M,corrected_coor,pixel_per_cm = corrected(frame_c)
+    M,corrected_coor,pixel_per_cm,ori_area = corrected(frame_c)
     result = cv2.warpPerspective(frame, M, frame.shape[1::-1])
 
     Dataframe_t = Dataframe.copy()
@@ -89,4 +92,5 @@ def calculate_transformation(frame,Dataframe):
         if name_bp+'_x' in Dataframe.columns:
             Dataframe_t = transform(Dataframe_t,name_bp,M)
 
-    return pixel_per_cm,Dataframe_t,result
+    return pixel_per_cm,Dataframe_t,result,corrected_coor,ori_area
+

@@ -1,5 +1,5 @@
 clear all;
-
+% run this script at the mouse folder with session folders (e.g. M111)
 path = pwd;
 folders = dir(path);
 folders = folders([folders.isdir]);  % Filter out non-folders
@@ -25,6 +25,7 @@ for i = 1:numel(folders)
     
     if ~exist(df_path, 'file')
         photometry_nest;
+        folder = folders(i).name;
     end
 
     df = load(df_path);

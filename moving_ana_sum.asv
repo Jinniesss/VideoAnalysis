@@ -36,12 +36,12 @@ for i = 1:numel(folders)
 
     nest_a = load([folder '_nest_area.mat']);
     nest_a = nest_a.nest_area;
-    nest_area = horzcat(nest_area,nest_a);   % cm^2
+    nest_area = horzcat(nest_area,nest_a);
     cd(path)
 end
 
 
-save([mouse_name '_moving_ana_summary.mat'],'sessions','nest_area','time_out_of_nest','time_in_nest','moving_rate_out','moving_rate_in','moving_rate_tot')
+save([mouse_name '_moving_ana_summary.mat'],'time_out_of_nest','time_in_nest','moving_rate_out','moving_rate_in','moving_rate_tot','nest','sessions')
 
 function num = get_session(str)
     matches = regexp(str, '[sS](\d+)', 'tokens', 'once');

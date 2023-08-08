@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter.filedialog import askopenfilename
 import csv
+import cv2
+import random
 import re
 def change_csv_layout(original_file,dataname):
     # Create a new CSV file
@@ -27,3 +29,31 @@ def change_csv_layout(original_file,dataname):
 
     print('New csv file saved. [file name: ',new_file,']')
     return new_file
+
+def get_frame_from_video(video_fname, frame_number=10,rand=False):
+    video_capture = cv2.VideoCapture(video_fname)
+    # Get the total number of frames in the video
+    total_frames = int(video_capture.get(cv2.CAP_PROP_FRAME_COUNT))
+    if frame_number == -1:
+        frame_number = total_frames-1
+
+    if frame_number < 0 or frame_number >= total_frames:
+        raise ValueError("Invalid frame number. Must be between 0 and {}".format(total_frames - 1))
+
+    if rand is True:
+        frame_number = int(random.uniform(0,total_frames-1))
+        print('Frame: ', frame_number, '/', total_frames)
+
+    # Set the position to the specified frame number
+    video_capture.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
+
+    # Read the frame at the specified position
+    ret, frame = video_capture.read()
+
+    # Release the video capture object
+    video_capture.release()
+
+    if not ret:
+        raise ValueError("Unable to read the frame from the video.")
+
+    return frame

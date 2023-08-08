@@ -120,3 +120,16 @@ def test_window_for_nest(Dataframe, name, pixel_per_cm):
     plt.clf()
     plt.plot(range(1, 101), rate, '-o')
     plt.show()
+
+
+def area_of(points,pixel_per_cm,dataname,save=True):
+    points_np = np.array(points, dtype=np.int32)
+    points_np = points_np.reshape((-1, 1, 2))
+    area = cv2.contourArea(points_np)    # unit -- pixel^2
+    area = area/pixel_per_cm/pixel_per_cm
+    if save is True:
+        nest_area = {'nest_area': area}
+        scipy.io.savemat(dataname + '_nest_area.mat',nest_area)
+        print('Area of Nest saved.')
+    else:
+        return area

@@ -1,4 +1,4 @@
-clear all;
+% clear all;
 
 %%
 load('check_FP\phot_timehourcrop.mat','phot_timehourcrop');  % hour

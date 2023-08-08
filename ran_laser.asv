@@ -1,0 +1,10 @@
+clear;
+load("laser.mat","laser")
+len = length(laser);
+laser_r=zeros(len,1);
+laser_r(1) = 1;
+for i = 2:len
+    laser_r(i) = laser_r(i-1) + (rand*(50)+40);
+end
+
+save('laser_r.mat','laser_r')
