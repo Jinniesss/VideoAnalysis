@@ -61,7 +61,7 @@ def main(folder_path=None):
     avi_files = []
     video_fname=''
     for file in os.listdir(folder_path):
-        if file.endswith(".avi"):
+        if file.endswith(".avi") or file.endswith(".mp4"):
             avi_files.append(file)
     if len(avi_files) == 1:
         video_fname = folder_path + '/' + avi_files[0]
@@ -97,7 +97,7 @@ def main(folder_path=None):
     frame = get_frame_from_video(video_fname)
     frame = get_frame_from_video(video_fname)
     nest = True           # Whether is a selectable nest in the video or not
-    mov_nest = True
+    mov_nest = False
     gen_centroid = False
     show_nest_ana = True
     flag_write = False
@@ -105,7 +105,7 @@ def main(folder_path=None):
     re_gen_va = False
     va_img = False
     re_transform = False
-    laser = True
+    laser = False
     name4traj = 'centerbody3'
     name4kin = ['leftear', 'rightear','centerbody3','nose','headstage','centerbody2','centerbody4']
     # -------------------------------------------------------------------#

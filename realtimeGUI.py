@@ -141,7 +141,7 @@ class VideoPlayer(QMainWindow):
 
     def update_nest(self,position):
         cur_frame = int(position/100)
-        if len(self.df)==0:
+        if len(self.df)==0 or 'nest' not in self.df.columns:
             return
         if cur_frame>len(self.df):
             self.nest1.setText("ERROR")
@@ -164,7 +164,7 @@ class VideoPlayer(QMainWindow):
 
     def update_var(self,position):
         cur_frame = int(position/100)
-        if len(self.df)==0:
+        if len(self.df)==0 or 'movement_state' not in self.df.columns:
             return
         if cur_frame>len(self.df):
             self.nest.setText("ERROR")
@@ -199,7 +199,7 @@ class VideoPlayer(QMainWindow):
 
     def update_sleep(self,position):
         cur_frame = int(position/100)
-        if len(self.df)==0:
+        if len(self.df)==0 or 'sleep_state' not in self.df.columns:
             return
         if cur_frame>len(self.df):
             self.nest2.setText("ERROR")
@@ -310,7 +310,7 @@ class Plot_Figures(QMainWindow):
 
     def update_plots(self,position):
         # return          # temporary
-        if len(self.Dataframe) != 0:
+        if len(self.Dataframe) != 0 and 'nose_v' in self.Dataframe.columns:
             self.p1.update_plot(position,self.Dataframe['nose_v'],'velocity')
             self.p2.update_plot(position,self.Dataframe['nose_a'],'acceleration')
             # self.p3.update_plot(position,self.Dataframe['angle_left'],'angle_left')
@@ -345,9 +345,9 @@ class MainWindow(QMainWindow):
 
         # update the figures when video changes
         self.video_player.media_player.positionChanged.connect(self.figures.update_plots)
-        # self.video_player.media_player.positionChanged.connect(self.video_player.update_nest)
-        # self.video_player.media_player.positionChanged.connect(self.video_player.update_var)
-        # self.video_player.media_player.positionChanged.connect(self.video_player.update_sleep)
+        self.video_player.media_player.positionChanged.connect(self.video_player.update_nest)
+        self.video_player.media_player.positionChanged.connect(self.video_player.update_var)
+        self.video_player.media_player.positionChanged.connect(self.video_player.update_sleep)
         # set the layout
         layout = QHBoxLayout()
 

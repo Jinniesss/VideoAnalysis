@@ -45,7 +45,7 @@ def fit_gmm(Dataframe, name, n_components=2):
     print('GMM Weights:', gmm.weights_)
     print('------------------------------------------------')
 
-
+# not used
 def set_a_cluster(Dataframe, name, a1_max, a2_min):
     if a1_max > a2_min:
         print('Wrong value of thresholds: ', a1_max, ', ', a2_min)

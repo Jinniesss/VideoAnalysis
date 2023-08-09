@@ -1,5 +1,3 @@
-import scipy
-
 from functions.roi_associated import *
 import matplotlib.pyplot as plt
 from shapely.geometry import Polygon
