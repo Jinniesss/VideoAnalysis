@@ -4,6 +4,12 @@ _Jinnie 2023_
 
 
 **Pipelines**: 
++ For photometry v.s. nest states:
+    
+  [ana_for_folders.py](ana_for_folders.py) >> [moving_ana_sum.m](moving_ana_sum.m) >> [phot_for_folders.m](phot_for_folders.m)
+
+  both should select the mouse folder (e.g. M101)
+  
 + For photometry v.s. behavioral states:
     
   [ana_for_folders.py](ana_for_folders.py) >> [phot_vs_behav_state_for_folders.m](phot_vs_behav_state_for_folders.m)
@@ -14,8 +20,8 @@ _Jinnie 2023_
 
   [ana_for_folders.py](ana_for_folders.py) >> [realtimeGUI.py](realtimeGUI.py)
 
-  For the latter program, a csv file that contains the label column should be selected as csv file. 
-      (e.g. 'M101_S1_mov_state.csv')
+  For the latter script, a csv file that contains the wanted column should be selected. 
+      (e.g. movement_state -- 'M101_S1_mov_state.csv', nose_a -- 'M101_S1_data.csv')
 ---
 #### runnable Py files:
 
@@ -314,4 +320,4 @@ Creates `name_phot_beh_summary.mat` and plots.
 
 should be run under the same folder where `laser.m` is.
 
-Creates `laser_r.m`.
+Creates a random set of laser time `laser_r.m`.
