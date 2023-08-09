@@ -27,29 +27,29 @@ _Jinnie 2023_
 
 +  [realtimeGUI.py](realtimeGUI.py) 
 
-  shows the real-time change of several parameters along with the video.
-
-  *input: video file, data file [in converted format]*
+    shows the real-time change of several parameters along with the video.
+    
+    *input: video file, data file [in converted format]*
 ****
   
 
 +  [analysis.py](analysis.py) 
 
-  analyzes and updates the csv data from DEEPLABCUT, also generates some plots.
-
-  *input: video file, (several assignable variables)*
-
-**[Select the folder where the video and csv files are.]**
-
-**[Nest selection should be anticlockwise from the top left corner.]**
+    analyzes and updates the csv data from DEEPLABCUT, also generates some plots.
+    
+    *input: video file, (several assignable variables)*
+    
+    **[Select the folder where the video and csv files are.]**
+    
+    **[Nest selection should be anticlockwise from the top left corner.]**
 
 ---
 
 +  [ana_for_folders.py](ana_for_folders.py)
   
-  calls [analysis.py](analysis.py) for all the videos in a folder.
-
-  **[Select the folder that includes all the video folders (each of which contains a video and other corresponding files).]**
+    calls [analysis.py](analysis.py) for all the videos in a folder.
+    
+    **[Select the folder that includes all the video folders (each of which contains a video and other corresponding files).]**
 
 ---
 
@@ -271,53 +271,53 @@ _Jinnie 2023_
 #### .m files
 + [clustering.m](clustering.m)
 
-should be run under the video folder (e.g. M111_S1).
-
-Creates a table `name_mov_state.csv` containing columns
-`movement_state`, `sleep_state`, `bp_movement_state` for each bodypart, 
-and `nest`.
+    should be run under the video folder (e.g. M111_S1).
+    
+    Creates a table `name_mov_state.csv` containing columns
+    `movement_state`, `sleep_state`, `bp_movement_state` for each bodypart, 
+    and `nest`.
 
 + [moving_ana_sum.m](moving_ana_sum.m)
 
-should be run under the mouse folder (e.g. M111).
-
-`name_Moving_ana.mat` and `name_nest_area.mat` are needed for each video.
-
-Creates `name_moving_ana_summary.mat` that includes the area of nest, 
-and moving time/rate in/out of nest.
+    should be run under the mouse folder (e.g. M111).
+    
+    `name_Moving_ana.mat` and `name_nest_area.mat` are needed for each video.
+    
+    Creates `name_moving_ana_summary.mat` that includes the area of nest, 
+    and moving time/rate in/out of nest.
 
 + [photometry_nest.m](photometry_nest.m)
 
-should be run under the video folder (e.g. M111_S1).
-
-Creates `name_phot_ana.mat` and plots.
+    should be run under the video folder (e.g. M111_S1).
+    
+    Creates `name_phot_ana.mat` and plots.
 
 + [phot_for_folders.m](phot_for_folders.m)
 
-should be run under the mouse folder (e.g. M111).
+    should be run under the mouse folder (e.g. M111).
 
-Calls [phot_vs_behav_state.m](phot_vs_behav_state.m).
+    Calls [phot_vs_behav_state.m](phot_vs_behav_state.m).
 
-Creates `name_phot_ana_summary.mat` and plots.
+    Creates `name_phot_ana_summary.mat` and plots.
 
 + [phot_vs_behav_state.m](phot_vs_behav_state.m)
 
-should be run under the video folder (e.g. M111_S1).
-
-Calls [clustering.m](clustering.m).
-
-Creates `name_phot_vs_beh.mat` and plots.
+    should be run under the video folder (e.g. M111_S1).
+    
+    Calls [clustering.m](clustering.m).
+    
+    Creates `name_phot_vs_beh.mat` and plots.
 
 + [phot_vs_behav_state_for_folders.m](phot_vs_behav_state_for_folders.m)
 
-should be run under the mouse folder (e.g. M111).
-
-Calls [phot_vs_behav_state.m](phot_vs_behav_state.m).
-
-Creates `name_phot_beh_summary.mat` and plots.
+    should be run under the mouse folder (e.g. M111).
+    
+    Calls [phot_vs_behav_state.m](phot_vs_behav_state.m).
+    
+    Creates `name_phot_beh_summary.mat` and plots.
 
 + [ran_laser.m](ran_laser.m)
 
-should be run under the same folder where `laser.m` is.
-
-Creates a random set of laser time `laser_r.m`.
+    should be run under the same folder where `laser.m` is.
+    
+    Creates a random set of laser time `laser_r.m`.
