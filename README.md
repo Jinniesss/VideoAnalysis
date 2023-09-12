@@ -2,7 +2,9 @@
 
 _Jinnie 2023.7_
 
+> Mice behavior analysis on videos and data processed by DeepLabCut. 
 
+---
 **Pipelines**: 
 + For photometry v.s. nest states:
     
