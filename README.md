@@ -10,13 +10,13 @@ _Jinnie 2023.7_
     
   [ana_for_folders.py](ana_for_folders.py) >> [moving_ana_sum.m](moving_ana_sum.m) >> [phot_for_folders.m](phot_for_folders.m)
 
-  both should select the mouse folder (e.g. M101)
+  All should be run under the mouse folder (e.g. M101)
   
 + For photometry v.s. behavioral states:
     
   [ana_for_folders.py](ana_for_folders.py) >> [phot_vs_behav_state_for_folders.m](phot_vs_behav_state_for_folders.m)
 
-  both should select the mouse folder (e.g. M101)
+  Both should be run under the mouse folder (e.g. M101)
 
 + For a realtime check of behavioral states:
 
