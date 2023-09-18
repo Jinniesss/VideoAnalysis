@@ -321,3 +321,9 @@ _Jinnie 2023.7_
     should be run under the same folder where `laser.m` is.
     
     Creates a random set of laser time `laser_r.m`.
+
++ [laser_sleepstate.m](laser_sleepstate.m)
+
+    should be run under the same folder where `laser.m` is.
+    
+    Add a sleep state column to the file `laser.m`.

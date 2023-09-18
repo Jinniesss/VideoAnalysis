@@ -111,15 +111,15 @@ def corrected(frame):
     ori_area = area_pixel(corners)
     corners = np.array(corners, dtype=np.float32)
     from analysis import real_width,real_length
-    real_width = real_width/0.39370  # cm
-    real_length = real_length/0.39370    # cm
+    real_width_cm = real_width/0.39370  # cm
+    real_length_cm = real_length/0.39370    # cm
 
     w1 = (corners[3][0] - corners[0][0]) ** 2 + (corners[3][1] - corners[0][1]) ** 2
     w2 = (corners[2][0] - corners[1][0]) ** 2 + (corners[2][1] - corners[1][1]) ** 2
     width = (math.sqrt(w1)+math.sqrt(w2))/2   # width in pixel
     # width = corners[3][0]-corners[0][0]
-    pixel_per_cm = width / real_width
-    length = int(pixel_per_cm * real_length)
+    pixel_per_cm = width / real_width_cm
+    length = int(pixel_per_cm * real_length_cm)
     width = int(width)
     corrected_coor = np.float32(
         [[-width / 2, -length / 2], [-width / 2, length / 2], [width / 2, length / 2], [width / 2, -length / 2]])

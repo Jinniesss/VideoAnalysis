@@ -67,21 +67,6 @@ def laser_a_cluster(Dataframe, name, dataname, re_gen_plots=False):
     a1cluster_p = dataname + '_a1_max.pickle'
     a2cluster_p = dataname + '_a2_min.pickle'
     a1_max = a2_min = None
-    if os.path.exists(a1cluster_p):
-        with open(a1cluster_p, 'rb') as file:
-            a1_max = pickle.load(file)
-        with open(a2cluster_p, 'rb') as file:
-            a2_min = pickle.load(file)
-        print(np.log10(a1_max), np.log10(a2_min))
-    else:
-        print('The code is still stupid so please manually set the thresholds..')
-        a1_max = 10 ** float(input("Set the left threshold (max value for cluster 1): "))
-        a2_min = 10 ** float(input("Set the right threshold (min value for cluster 2): "))
-        # Dataframe = set_a_cluster(Dataframe,name,a1_max,a2_min)
-        with open(a1cluster_p, 'wb') as file:
-            pickle.dump(a1_max, file)
-        with open(a2cluster_p, 'wb') as file:
-            pickle.dump(a2_min, file)
 
     if not os.path.exists(dataname + '_cluster1.pickle') \
             or not os.path.exists(dataname + '_laser_a_cluster1.png') \
@@ -117,6 +102,22 @@ def laser_a_cluster(Dataframe, name, dataname, re_gen_plots=False):
         c2 = []
         x = np.arange(-1, 5, 1 / freq)
 
+        if os.path.exists(a1cluster_p):
+            with open(a1cluster_p, 'rb') as file:
+                a1_max = pickle.load(file)
+            with open(a2cluster_p, 'rb') as file:
+                a2_min = pickle.load(file)
+            print(np.log10(a1_max), np.log10(a2_min))
+        else:
+            print('The code is still stupid so please manually set the thresholds..')
+            a1_max = 10 ** float(input("Set the left threshold (max value for cluster 1): "))
+            a2_min = 10 ** float(input("Set the right threshold (min value for cluster 2): "))
+            # Dataframe = set_a_cluster(Dataframe,name,a1_max,a2_min)
+            with open(a1cluster_p, 'wb') as file:
+                pickle.dump(a1_max, file)
+            with open(a2cluster_p, 'wb') as file:
+                pickle.dump(a2_min, file)
+
         # plot for all
         for i, pre_m in enumerate(pre):
             cur_frame = laser_frame[i]
@@ -125,7 +126,8 @@ def laser_a_cluster(Dataframe, name, dataname, re_gen_plots=False):
                 continue
             c_all.append(li)
 
-        plt.axvline(x=0, color='black', linestyle='--')
+        plt.axvline(x=0, color='grey', linestyle='--')
+        plt.axvline(x=0.5, color='grey', linestyle='--')
         if c_all:
             plt.plot(x, np.mean(np.array(c_all), axis=0), color='black', label='all')
             ste_all = np.std(np.array(c_all), axis=0) / np.sqrt(len(c_all))

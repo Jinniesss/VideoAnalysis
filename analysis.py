@@ -105,7 +105,7 @@ def main(folder_path=None):
     re_gen_va = False
     va_img = False
     re_transform = False
-    laser = False
+    laser = True
     name4traj = 'centerbody3'
     name4kin = ['leftear', 'rightear','centerbody3','nose','headstage','centerbody2','centerbody4']
     # -------------------------------------------------------------------#

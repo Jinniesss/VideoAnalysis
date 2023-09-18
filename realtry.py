@@ -1,23 +1,18 @@
-import cv2
+import matplotlib.pyplot as plt
 import numpy as np
 
-def polygon_area(points):
-    # Create a numpy array of the points in the format expected by cv2.contourArea()
-    points_np = np.array(points, dtype=np.int32)
+# Create a plot
+plt.axvline(x=1, color='blue', linestyle='--', label='x=1')
+plt.axvline(x=2, color='red', linestyle='--', label='x=2')
 
-    # Reshape the points array to have shape (number_of_points, 1, 2)
-    points_np = points_np.reshape((-1, 1, 2))
+# Fill the area between the vertical lines
+plt.fill_betweenx([0, 1], 1, 2, color='green', alpha=0.3, label='area between x=1 and x=2')
 
-    # Calculate the area using cv2.contourArea()
-    area = cv2.contourArea(points_np)
+# Add labels, title, and legend
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.title('Fill Area Between Vertical Lines')
+plt.legend()
 
-    return abs(area)
-
-# Example usage:
-# Define the polygon vertices as (x, y) coordinates
-polygon_points = [(0, 0), (4, 0), (4, 3), (0, 3)]
-
-# Calculate the area of the polygon
-area = polygon_area(polygon_points)
-
-print("Area of the polygon:", area)
+# Show the plot
+plt.show()
