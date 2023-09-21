@@ -43,15 +43,15 @@ _Jinnie 2023.7_
     
     **[Select the folder where the video and csv files are.]**
     
-    **[Nest selection should be anticlockwise from the top left corner.]**
+    **[Nest selection must be anticlockwise from the top left corner.]**
 
 ---
 
 +  [ana_for_folders.py](ana_for_folders.py)
   
-    calls [analysis.py](analysis.py) for all the videos in a folder.
+    calls [analysis.py](analysis.py) for every video in the selected folder.
     
-    **[Select the folder that includes all the video folders (each of which contains a video and other corresponding files).]**
+    **[Select the folder that contains all the video folders (each of which contains a video and other corresponding files).]**
 
 ---
 
