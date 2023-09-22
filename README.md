@@ -2,7 +2,7 @@
 
 _Jinnie 2023.7_
 
-> Mice behavior analysis on videos and data processed by DeepLabCut. 
+> Mice behavior analysis on videos and DeepLabCut-processed data. 
 
 ---
 **Pipelines**: 
@@ -10,13 +10,13 @@ _Jinnie 2023.7_
     
   [ana_for_folders.py](ana_for_folders.py) >> [moving_ana_sum.m](moving_ana_sum.m) >> [phot_for_folders.m](phot_for_folders.m)
 
-  All should be run under the mouse folder (e.g. M101)
+  All should be run under the mouse folder (e.g. M101) where the session folders are.
   
 + For photometry v.s. behavioral states:
     
   [ana_for_folders.py](ana_for_folders.py) >> [phot_vs_behav_state_for_folders.m](phot_vs_behav_state_for_folders.m)
 
-  Both should be run under the mouse folder (e.g. M101)
+  Both should be run under the mouse folder (e.g. M101) where the session folders are.
 
 + For a realtime check of behavioral states:
 
